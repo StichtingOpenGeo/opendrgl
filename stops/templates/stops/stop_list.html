@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+        <h1>{% trans "Haltes" %}</h1>
+{% for stop in stops %}
+    {{ stop }}
+{% endfor %}
+{% endblock %}
