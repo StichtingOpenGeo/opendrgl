@@ -1,7 +1,39 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n crispy_forms_tags leaflet_tags %}
 
+{% block extra_js %}
+    {% leaflet_js %}
+    <script type="text/javascript">
+        var glob_map;
+        function myInit(map, options) {
+            glob_map = map
+            glob_map.setView([52.089821, 5.10981], 8); /* Utrecht */
+        }
+
+        $('#id_town').on('blur', function() {
+            moveMapToTown($(this).val());
+        });
+
+        function moveMapToTown(town) {
+            $.ajax('https://1313.nl/geocoder/'+town+'*').done(function(data) {
+                if (data.features.length > 0) {
+                    coords = data.features[0].geometry.coordinates
+                    glob_map.panTo({lon: coords[0], lat: coords[1]});
+                    glob_map.setZoom(14);
+                }
+            });
+        }
+    </script>
+{% endblock %}
+{% block extra_css %} {% leaflet_css %} {% endblock %}
 {% block content %}
         <h1>{% trans "Halte toevoegen" %}</h1>
-
+        <div class="row">
+            <div class="col-md-6 col-lg-6">
+                {% crispy form form.helper %}
+            </div>
+            <div class="col-md-6 col-lg-6">
+                {% leaflet_map "stop_picker" callback="window.myInit" %}
+            </div>
+        </div>
 {% endblock %}

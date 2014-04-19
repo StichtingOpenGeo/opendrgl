@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load i18n crispy_forms_tags %}
+
+{% block content %}
+        <h1>{% trans "Project toevoegen" %}</h1>
+
+        {% crispy form %}
+
+{% endblock %}

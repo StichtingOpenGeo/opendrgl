@@ -1,4 +1,4 @@
-{% load i18n staticfiles %}
+{% load i18n staticfiles leaflet_tags %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -45,6 +45,7 @@
                 <a href="#">
                     <span class="glyphicon glyphicon-log-in"></span>&nbsp;{% trans "Inloggen" %}
                 </a>
+            </ul>
           </li>
         </ul>
       </div>
@@ -55,6 +56,5 @@
     <script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     {% block extra_js %} {% endblock %}
-    <script type="text/javascript">$(document).ready(load_ebs);</script>
 </body>
 </html>

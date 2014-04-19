@@ -2,8 +2,23 @@
 {% load i18n %}
 
 {% block content %}
-        <h1>{% trans "Haltes" %}</h1>
-{% for stop in stops %}
-    {{ stop }}
-{% endfor %}
+        <h2>{% trans "Haltes" %}
+            <a class="btn btn-success pull-right" href="{% url 'stop_add' %}">{% trans "Toevoegen" %}</a>
+            </h2>
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th>{% trans "Id" %}</th>
+                <th>{% trans "Plaats" %}</th>
+                <th>{% trans "Haltenaam" %}</th>
+                <th>{% trans "Haltepalen" %}</th>
+            </tr>
+            {% for stop in object_list %}
+            <tr>
+                <td><a href="{% url 'stop_edit' stop.id %}">{{ stop.stop_id }}</a></td>
+                <td>{{ stop.town }}</td>
+                <td>{{ stop.name }}</td>
+                <td>{{ stop.quay_set.count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
 {% endblock %}

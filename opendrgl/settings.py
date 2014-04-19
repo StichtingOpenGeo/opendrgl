@@ -30,15 +30,25 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
+
     'projects',
     'stops',
-    'trips'
+    'trips',
+
+    # Libs
+    'crispy_forms',
+    'leaflet',
+
+    # Admin & tools
+    'south',
+    'django_admin_bootstrapped',
+    'django.contrib.admin'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -57,13 +67,24 @@ WSGI_APPLICATION = 'opendrgl.wsgi.application'
 # Templates
 TEMPLATE_DIRS = ("opendrgl/templates", )
 
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_FAIL_SILENTLY = not DEBUG
+
+LEAFLET_CONFIG = {
+    'TILES': 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    'RESET_VIEW': False
+}
+
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'opendrgl',
+        'USER': 'opendrgl',
+        'PASSWORD': 'opendrgl',
+        'HOST': '127.0.0.1'
     }
 }
 
