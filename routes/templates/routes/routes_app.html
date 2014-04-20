@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load i18n staticfiles %}
+
+{% block content %}
+<div id="viewContainer">
+
+
+</div>
+
+<script type="text/template" id="routesList">
+    <h2>Routes
+        <a class="btn btn-success pull-right" href="#route/new">{% trans "Toevoegen" %}</a>
+    </h2>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>{% trans "Lijn" %}</th>
+            <th>{% trans "Eindbestemming" %}</th>
+            <th>{% trans "Acties" %}</th>
+        </tr>
+        <tbody id="routeRows">
+
+        </tbody>
+    </table>
+</script>
+
+<script type="text/template" id="routeRow">
+        <td><%- route_id %></td>
+        <td><%- destination %></td>
+        <td><a class="btn btn-xs btn-default" href="#edit">{% trans "Bewerk" %}</a></td>
+</script>
+
+<script type="text/template" id="routeNew">
+    <h2>Nieuwe Route</h2>
+
+    <a id="save">{% trans "Opslaan" %}</a>
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="{% static 'js/underscore.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/backbone.min.js' %}"></script>
+    <script>
+        // (Optional) Do this if you are using csrf protection:
+        // See: https://docs.djangoproject.com/en/dev/ref/contrib/csrf/
+        var oldSync = Backbone.sync;
+        Backbone.sync = function(method, model, options) {
+            options.beforeSend = function(xhr){
+                xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+            };
+            return oldSync(method, model, options);
+        };
+        var app = {}
+
+        app.Route = Backbone.Model.extend();
+        app.RouteCollection = Backbone.Collection.extend({
+            model: app.Route
+        });
+        app.Route.prototype.urlRoot = "{% url 'backbone:routes_route' %}";
+        app.RouteCollection.prototype.url = "{% url 'backbone:routes_route' %}";
+
+        app.routesList = new app.RouteCollection();
+
+        app.RouteListView = Backbone.View.extend({
+            el: "#viewContainer",
+            template: _.template( $('#routesList').html(), {} ),
+            initialize: function() {
+               app.routesList.on('add', this.addAll, this);
+               app.routesList.on('reset', this.addAll, this);
+               app.routesList.fetch();
+               this.render();
+            },
+            addAll: function() {
+                this.$('#routeRows').html('');
+                app.routesList.each(this.addItem, this);
+            },
+            addItem: function(item) {
+                var view = new app.RouteRowView({model: item});
+                $('#routeRows').append(view.render().el);
+            },
+            render: function() {
+                this.$el.html( this.template );
+            }
+        });
+
+        app.RouteRowView = Backbone.View.extend({
+            tagName: 'tr',
+            template: _.template($('#routeRow').html()),
+            render: function(){
+                this.$el.html(this.template(this.model.toJSON()));
+                return this; // enable chained calls
+            }
+        });
+
+        app.RouteNewView = Backbone.View.extend({
+            el: "#viewContainer",
+            template: _.template( $('#routeNew').html(), {} ),
+            initialize: function() {
+               this.render();
+            },
+            render: function() {
+                this.$el.html( this.template );
+            }
+        });
+
+        app.Router = Backbone.Router.extend({
+            routes : {
+                '' : 'showList',
+                'route/new' : 'showNewRoute',
+            },
+            showList: function() {
+                 app.listView = new app.RouteListView();
+            },
+            showNewRoute: function() {
+                app.routeNewView = new app.RouteNewView()
+            }
+        });
+        app.router = new app.Router();
+        Backbone.history.start();
+        /*app.listView = new app.RouteListView();*/
+    </script>
+
+{% endblock %}

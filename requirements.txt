@@ -5,3 +5,4 @@ django-crispy-forms
 django-admin-bootstrapped
 django-leaflet
 django-geojson
+django-backbone

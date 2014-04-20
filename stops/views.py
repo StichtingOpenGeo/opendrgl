@@ -11,7 +11,7 @@ class EnsureProjectMixin(View):
     def get(self, request, *args, **kwargs):
         if not request.session.get('project_id', False):
             return HttpResponseRedirect(reverse('project_list'))
-        return super(EnsureProjectMixin, self).get(request, args, kwargs)
+        return super(EnsureProjectMixin, self).get(request, *args, **kwargs)
 
     def get_project(self):
         return self.request.session.get('project_id', None)

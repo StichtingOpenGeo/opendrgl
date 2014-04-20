@@ -8,27 +8,28 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Line'
-        db.create_table(u'trips_line', (
+        # Adding model 'Route'
+        db.create_table(u'routes_route', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('project', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['projects.Project'])),
+            ('route_id', self.gf('django.db.models.fields.CharField')(max_length=10)),
         ))
-        db.send_create_signal(u'trips', ['Line'])
+        db.send_create_signal(u'routes', ['Route'])
 
         # Adding model 'Trip'
-        db.create_table(u'trips_trip', (
+        db.create_table(u'routes_trip', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('line', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['trips.Line'])),
+            ('line', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['routes.Route'])),
         ))
-        db.send_create_signal(u'trips', ['Trip'])
+        db.send_create_signal(u'routes', ['Trip'])
 
 
     def backwards(self, orm):
-        # Deleting model 'Line'
-        db.delete_table(u'trips_line')
+        # Deleting model 'Route'
+        db.delete_table(u'routes_route')
 
         # Deleting model 'Trip'
-        db.delete_table(u'trips_trip')
+        db.delete_table(u'routes_trip')
 
 
     models = {
@@ -38,16 +39,17 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        u'trips.line': {
-            'Meta': {'object_name': 'Line'},
+        u'routes.route': {
+            'Meta': {'object_name': 'Route'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'project': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['projects.Project']"})
+            'project': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['projects.Project']"}),
+            'route_id': ('django.db.models.fields.CharField', [], {'max_length': '10'})
         },
-        u'trips.trip': {
+        u'routes.trip': {
             'Meta': {'object_name': 'Trip'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'line': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['trips.Line']"})
+            'line': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['routes.Route']"})
         }
     }
 
-    complete_apps = ['trips']
+    complete_apps = ['routes']

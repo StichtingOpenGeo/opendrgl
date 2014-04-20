@@ -39,11 +39,12 @@ INSTALLED_APPS = (
 
     'projects',
     'stops',
-    'trips',
+    'routes',
 
     # Libs
     'crispy_forms',
     'leaflet',
+    'backbone',
 
     # Admin & tools
     'south',
