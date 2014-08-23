@@ -1,8 +1,0 @@
-Django==1.6.2
-south
-psycopg2==2.4.5
-django-crispy-forms
-django-admin-bootstrapped
-django-leaflet
-django-geojson
-django-backbone
