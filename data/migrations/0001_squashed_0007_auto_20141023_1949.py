@@ -6,6 +6,8 @@ from django.db import models, migrations
 
 class Migration(migrations.Migration):
 
+    replaces = [(b'data', '0001_initial'), (b'data', '0002_auto_20141023_1943'), (b'data', '0003_auto_20141023_1944'), (b'data', '0004_auto_20141023_1945'), (b'data', '0005_auto_20141023_1947'), (b'data', '0006_auto_20141023_1948'), (b'data', '0007_auto_20141023_1949')]
+
     dependencies = [
     ]
 
@@ -147,5 +149,70 @@ class Migration(migrations.Migration):
         migrations.AlterUniqueTogether(
             name='line',
             unique_together=set([('agency', 'planning_number')]),
+        ),
+        migrations.AddField(
+            model_name='stop',
+            name='agency',
+            field=models.ForeignKey(default=None, to='data.Agency'),
+            preserve_default=False,
+        ),
+        migrations.AlterField(
+            model_name='stop',
+            name='public_number',
+            field=models.CharField(max_length=10),
+        ),
+        migrations.AlterUniqueTogether(
+            name='stop',
+            unique_together=set([('agency', 'public_number')]),
+        ),
+        migrations.AlterField(
+            model_name='stop',
+            name='lat',
+            field=models.DecimalField(max_digits=10, decimal_places=8, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='stop',
+            name='lng',
+            field=models.DecimalField(max_digits=10, decimal_places=8, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='stop',
+            name='lat',
+            field=models.DecimalField(null=True, max_digits=10, decimal_places=8, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='stop',
+            name='lng',
+            field=models.DecimalField(null=True, max_digits=10, decimal_places=8, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='trip',
+            name='calendar',
+            field=models.ForeignKey(to='data.Calendar', blank=True),
+        ),
+        migrations.AlterField(
+            model_name='trippatternstop',
+            name='arrival_delta',
+            field=models.PositiveIntegerField(blank=True),
+        ),
+        migrations.AlterField(
+            model_name='trippatternstop',
+            name='departure_delta',
+            field=models.PositiveIntegerField(blank=True),
+        ),
+        migrations.AlterField(
+            model_name='trip',
+            name='calendar',
+            field=models.ForeignKey(blank=True, to='data.Calendar', null=True),
+        ),
+        migrations.AlterField(
+            model_name='trippatternstop',
+            name='arrival_delta',
+            field=models.PositiveIntegerField(null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='trippatternstop',
+            name='departure_delta',
+            field=models.PositiveIntegerField(null=True, blank=True),
         ),
     ]

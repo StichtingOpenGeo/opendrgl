@@ -5,16 +5,18 @@ from djangular.views.crud import NgCRUDView
 from data.models import TripPattern, Stop, TripPatternStop, Trip, Line
 
 
-class LineOverviewView(NgCRUDView, DetailView):
-    model = Line
+class TripPatternOverviewView(NgCRUDView, DetailView):
+    model = TripPattern
+    filter = ['pk']
 
     def dispatch(self, request, *args, **kwargs):
-        return self.build_json_response(self.get_queryset())
+        qry = self.get_object()
+        return self.build_json_response(qry)
 
     def get_object(self, queryset=None):
         if 'pk' in self.request.GET:
             try:
-                return self.model.objects.get(pk=self.request.GET['pk'])
+                return self.model.objects.filter(line_id=self.request.GET['pk'])
             except ObjectDoesNotExist:
                 raise Http404
         else:
