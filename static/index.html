@@ -5,8 +5,8 @@
     <title>OpenDrgl</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
 
 </head>
 <body>
@@ -19,39 +19,22 @@
         </div><!-- /.container-fluid -->
     </nav>
     <div class="container">
-        <div class="line">
+        <div class="line" ng-controller="LineCtrl as line">
             <h2><span class="col-lg-1">Lijn</span><input name="linenumber" class="form-inline col-lg-1"><span class="col-lg-1">naar</span><input name="destination"/></h2>
-        </div>
-        <div class="schedule" ng-controller="ScheduleCtrl as ctrl">
-            <table class="table table-bordered">
-                <tr>
-                    <th class="data-halte">Halte</th>
-                    <th ng-repeat="trip in trips"> {{ trip.id }}</th>
-                    <th><a ng-click="addTrip()">Nieuwe rit</a></th>
-                </tr>
-                <tr ng-repeat="(stopIndex, stop) in getStops()">
-                    <td>
-                        <input value="{{stop.name}}" />
-                    </td>
-                    <td ng-repeat="(tripIndex, trip) in trips">
-                        <span ng-if="stopIndex > 0 && tripIndex > 0" ng-bind="trips[tripIndex].stops[stopIndex].time"></span>
-                        <input ng-model="trips[tripIndex].stops[stopIndex].time" ng-if="tripIndex == 0 || stopIndex == 0" />
-                    </td>
-                </tr>
-                <tr id="newRow">
-                    <td>
-                        <input ng-model="newStop.name" placeholder="Nieuwe halte" />
-                        <a ng-click="addStop()">Add</a>
-                    </td>
-                </tr>
-            </table>
-        </div>
+            <h3>Heen</h3>
+            <schedule-table ng-init="isForward = true"></schedule-table>
 
+            <h3>Terug</h3>
+            <schedule-table ng-init="isForward = false"></schedule-table>
+        </div>
     </div>
 
-    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="../bower_components/angular/angular.min.js"></script>
-    <script src="js/controllers.js"></script>
+    <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/static/bower_components/angular/angular.min.js"></script>
+    <script src="/static/bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="/static/bower_components/angular-resource/angular-resource.js"></script>
+    <script src="/static/js/services.js"></script>
+    <script src="/static/js/controllers.js"></script>
 </body>
 </html>

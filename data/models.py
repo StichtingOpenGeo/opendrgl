@@ -13,7 +13,7 @@ class Stop(models.Model):
     public_number = models.CharField(max_length=10)
     planning_number = models.CharField(max_length=10, unique=True)
     name = models.CharField(max_length=100)
-    city = models.CharField(max_length=25)
+    city = models.CharField(max_length=25, blank=True, null=True)
     # TODO: Make this Geo field
     lat = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
     lng = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
@@ -50,7 +50,7 @@ class Line(models.Model):
 
 class TripPattern(models.Model):
     line = models.ForeignKey(Line, related_name='trippatterns')
-
+    is_forward = models.BooleanField(default=True)
 
 class TripPatternStop(models.Model):
     pattern = models.ForeignKey(TripPattern)
@@ -83,9 +83,9 @@ class CalenderExceptions(models.Model):
 
 
 class Trip(models.Model):
-    trip_pattern = models.ForeignKey(TripPattern)
+    pattern = models.ForeignKey(TripPattern)
     start_time = models.TimeField()
     calendar = models.ForeignKey(Calendar, blank=True, null=True) # Null = every day
 
     class Meta:
-        unique_together = (('trip_pattern', 'start_time'), )
+        unique_together = (('pattern', 'start_time'), )
