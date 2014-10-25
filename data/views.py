@@ -13,8 +13,7 @@ class BaseNgView(NgCRUDView, DetailView):
         if self.query_slug not in self.request.GET:
             raise Http404
         try:
-            obj = self.get_object(self.request.GET[self.query_slug])
-            return self.build_json_response(self.get_object(obj))
+            return self.build_json_response(self.get_data(self.request.GET[self.query_slug]))
         except ObjectDoesNotExist:
             raise Http404
 
@@ -23,22 +22,22 @@ class LineTripPatternView(BaseNgView):
     model = TripPattern
     query_slug = 'line'
 
-    def get_object(self, param, queryset=None):
+    def get_data(self, param):
         return self.model.objects.filter(line_id=param, is_forward=(self.request.GET['is_forward'] == 'true'))
 
 class TripPatternStopListView(BaseNgView):
     model = TripPatternStop
     query_slug = 'pattern'
 
-    def get_object(self, param, queryset=None):
-        return self.model.objects.select_related('stop').filter(pattern_id=param)
+    def get_data(self, param):
+        return self.model.objects.filter(pattern_id=param)
 
-class TripPatternTripView(NgCRUDView, DetailView):
+class TripPatternTripView(BaseNgView):
     model = Trip
     query_slug = 'pattern'
 
-    def get_object(self, param, queryset=None):
-        return self.model.objects.filter(pattern_id=self.request.GET['pattern'])
+    def get_data(self, param):
+        return self.model.objects.filter(pattern_id=param)
 
 class StopView(NgCRUDView):
     model = Stop
