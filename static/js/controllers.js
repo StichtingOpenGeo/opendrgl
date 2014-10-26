@@ -166,6 +166,8 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
                Trip.get({pk: $scope.trips[tripIndex].pk}, function(trip) {
                 trip.start_time = $scope.parseDateToSeconds($scope.parseTime(newVal));
                 trip.$save();
+                /* Make sure to update times */
+                $scope.trips[tripIndex].stops = $scope.cloneStops(trip.pattern, trip.start_time);
                });
            }
         }
@@ -178,6 +180,11 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
                     if (tps.departure_delta != newVal) {
                         tps.departure_delta = newVal;
                         tps.$save()
+                        /* Make sure to update times */
+                        pattern.stops[stopIndex].departure_delta = newVal;
+                        angular.forEach($scope.trips, function(trip, index) {
+                            trip.stops = $scope.cloneStops(trip.pattern, trip.start_time);
+                        });
                     }
                 });
             }
