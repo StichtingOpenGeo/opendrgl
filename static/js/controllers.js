@@ -40,40 +40,6 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
     $scope.patterns = {};
     $scope.trips = [];
 
-//    $scope.patterns = {
-//        1: {
-//            pk: 1,
-//            stops: [
-//                { id: 1, order: 1, name: "Home", time: "09:00"},
-//                { id: 2, order: 2, name: "Work", time: "09:10"},
-//                { id: 2, order: 3, name: "Work", time: "09:15"}
-//            ]
-//        }
-//    }
-//    $scope.trips = [
-//        {
-//            pk: 1,
-//            pattern: 1,
-//            first: true,
-//            start_time: "09:00",
-//            stops: [
-//                { id: 1, order: 1, name: "Home", time: "09:00"},
-//                { id: 2, order: 2, name: "Work", time: "09:10"},
-//                { id: 2, order: 3, name: "Work", time: "09:15"}
-//            ]
-//        },
-//        {
-//            pk: 2,
-//            pattern: 1,
-//            first: false,
-//            start_time: "09:30",
-//            stops: [
-//                { id: 1, order: 1, name: "Home", time: "09:30"},
-//                { id: 2, order: 2, name: "Work", time: "09:40"},
-//                { id: 2, order: 3, name: "Work", time: "09:45"}
-//            ]
-//        }
-//    ];
     $scope.getStops = function() {
         if ($scope.patterns[1] != null) {
             return $scope.patterns[1].stops;
@@ -88,14 +54,35 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
     $scope.addTrip = function() {
         $scope.lastTripId += 1;
         var defaultPattern = $scope.patterns[Object.keys($scope.patterns)[0]].pk;
-        var startTime = $scope.parseTime($scope.trips[$scope.trips.length-1].start_time);
-        startTime.setMinutes(startTime.getMinutes()+1);
-        var t = new Trip({ pattern: trip.pattern, start_time: trip.start_time });
+        var startTime = $scope.trips[$scope.trips.length-1].start_time + 60;
+        var t = new Trip({ pattern: defaultPattern, start_time: startTime });
         t.$save(function(t) {
-            var trip = { id: $scope.lastTripId, pattern: defaultPattern, start_time: $scope.printTime(startTime), stops: $scope.cloneStops() }
-            $scope.trips.push(trip);
+            t.stops = $scope.cloneStops(defaultPattern, startTime);
+            t.first = false;
+            t.start_time_written = $scope.printTime($scope.parseSeconds(startTime))
+            $scope.trips.push(t);
             var tripIndex = $scope.trips.length - 1
-            $scope.$watch('trips['+tripIndex+'].start_time', $scope.handleTripStartChangeListener(tripIndex));
+            $scope.$watch('trips['+tripIndex+'].start_time_written', $scope.handleTripStartChangeListener(tripIndex));
+        });
+    }
+    $scope.addStop = function() {
+        var stopId = parseInt($scope.getHighestStop()) + 1;
+        var s = new Stop({  agency: $scope.agency_id,
+            name: $scope.newStop.name,
+            planning_number: stopId,
+            public_number: stopId })
+        s.$save(function(stop) {
+            $scope.stops[stop.pk] = stop;
+            angular.forEach($scope.patterns, function (pattern, pk) {
+                var tps = new TripPatternStop({pattern: pattern.pk, stop: stop.pk,
+                    order: $scope.getMaxOrder(pattern.stops) + 1  });
+                tps.$save(function(patternstop) {
+                    pattern.stops.push(patternstop);
+                });
+                var stopIndex = $scope.patterns[pk].stops.length - 1
+                $scope.$watch('patterns[pk].stops['+stopIndex+'].departure_delta', $scope.handleTripTimeChangeListener(pattern, stopIndex));
+            });
+            $scope.newStop = { name: "" }
         });
     }
     $scope.getHighestStop = function() {
@@ -117,36 +104,21 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
         }
         return highest
     }
-    $scope.addStop = function() {
-        var stopId = parseInt($scope.getHighestStop()) + 1;
-        var s = new Stop({  agency: $scope.agency_id,
-                            name: $scope.newStop.name,
-                            planning_number: stopId,
-                            public_number: stopId })
-        s.$save(function(stop) {
-            $scope.stops[stop.pk] = stop;
-            angular.forEach($scope.patterns, function (pattern, pk) {
-                var tps = new TripPatternStop({pattern: pattern.pk, stop: stop.pk,
-                                                order: $scope.getMaxOrder(pattern.stops) + 1  });
-                tps.$save(function(patternstop) {
-                    pattern.stops.push(patternstop);
-                });
-                var stopIndex = $scope.patterns[pk].stops.length - 1
-                $scope.$watch('patterns[pk].stops['+stopIndex+'].departure_delta', $scope.handleTripTimeChangeListener(pattern, stopIndex));
-//                lastStop = trip.stops[trip.stops.length - 1]
-//                trip.stops.push({ id: s.pk, name: $scope.newStop.name, time: lastStop.time });
-            });
-//            var lastId = $scope.trips[0].stops.length - 1;
 
-            $scope.newStop = { name: "" }
+    $scope.cloneStops = function(pattern, start_time) {
+        var stops = []
+        angular.forEach($scope.patterns[pattern].stops, function(stop, stopIndex) {
+            var new_stop = {arrival_delta: stop.arrival_delta,
+                            departure_delta: stop.departure_delta,
+                            order: stop.order,
+                            pattern: stop.pattern,
+                            pk: stop.pk,
+                            stop: stop.stop,
+                            time: $scope.printTime($scope.parseSeconds(start_time + stop.departure_delta))
+                            }
+            stops.push(new_stop);
         });
-    }
-    $scope.cloneStops = function() {
-        var output = []
-        angular.forEach($scope.getStops(), function (stop, id) {
-            output.push({ id: stop.id, name: stop.name, time: stop.time })
-        });
-        return output;
+        return stops
     }
     $scope.removeStop = function(patternStop) {
         TripPatternStop.delete({pk: patternStop.pk}, function(deletedPattern) {
@@ -155,17 +127,34 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
             $scope.current_stops = $scope.getStops();
         });
     }
+    $scope.removeTrip = function(trip) {
+        Trip.delete({pk: trip.pk}, function(deleted) {
+            var i = $scope.trips.indexOf(trip)
+            $scope.trips.splice(i, 1)
+        });
+    }
     $scope.parseTime = function(input) {
+        if (input == null) {
+            return null;
+        }
         var out = new Date();
         var split = input.split(':');
         out.setHours(parseInt(split[0]));
         out.setMinutes(parseInt(split[1]));
+        out.setSeconds(parseInt(split[2]));
         return out;
     }
+    $scope.parseTimeToSeconds = function(input) {
+        if (input == null) {
+            return null;
+        }
+        var split = input.split(':');
+        return parseInt(split[0]) * 60*60 + parseInt(split[1]) * 60 + parseInt(split[2]) ;
+    }
     $scope.padTime = function(input) {
-//        if (input) {
-//            return "00" + input.slice('-2');
-//        }
+        if (input < 10) {
+            return "0" + input;
+        }
         return input
     }
     $scope.printTime = function(time) {
@@ -175,62 +164,61 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
         return function(newVal, oldVal, scope) {
            if (oldVal !== newVal && $scope.parseTime(newVal) != null) {
                Trip.get({pk: $scope.trips[tripIndex].pk}, function(trip) {
-                trip.start_time = newVal;
+                trip.start_time = $scope.parseDateToSeconds($scope.parseTime(newVal));
                 trip.$save();
                });
            }
         }
     }
     $scope.handleTripTimeChangeListener = function(pattern, stopIndex) {
-        return function(newVal, oldVal) {
-            if (oldVal !== newVal) {
-                console.log("Changed pattern time " +pattern+" and stop " + stopIndex);
+        return function(newVal, oldVal, scope) {
+            if (oldVal !== newVal && $scope.parseTime(newVal) != null) {
+                TripPatternStop.get({pk: pattern.stops[stopIndex].pk}, function (tps) {
+                    newVal = Math.max($scope.parseTimeToSeconds(newVal) - $scope.trips[pattern.trip_index].start_time, 0)
+                    if (tps.departure_delta != newVal) {
+                        tps.departure_delta = newVal;
+                        tps.$save()
+                    }
+                });
             }
         }
     };
-    $scope.recalculateDiffs = function() {
-        $scope.diffs = [];
-        var stops = $scope.getStops();
-        var cur, next;
-        for (var i = 0; i < stops.length-1; i++) {
-            cur = $scope.parseTime(stops[i].time);
-            next = $scope.parseTime(stops[i+1].time);
-            $scope.diffs.push(next-cur);
-        }
-    }
-    $scope.recalculateTrips = function() {
-        for (var i = 1; i < $scope.trips.length; i++) {
-            $scope.recalculateTrip($scope.trips[i]);
-        }
-    }
-    $scope.recalculateTrip = function(trip) {
-        var prev = $scope.parseTime(trip.stops[0].time);
-        var newTime;
-        for (var i = 1; i < trip.stops.length; i++) {
-            newTime = new Date(prev);
-            newTime.setMilliseconds(newTime.getMilliseconds() + $scope.diffs[i-1])
-            trip.stops[i].time = $scope.printTime(newTime);
-            prev = $scope.parseTime(trip.stops[i].time);
-        }
+
+    $scope.parseSeconds = function (baseSeconds) {
+        var time = new Date();
+        var hours   = Math.floor(baseSeconds / 3600);
+        var minutes = Math.floor((baseSeconds - (hours * 3600)) / 60);
+        time.setHours(hours, minutes, baseSeconds - (hours * 3600) - (minutes * 60))
+        return time
+    };
+    $scope.parseDateToSeconds = function(date) {
+        return date.getSeconds() + date.getMinutes() * 60 + date.getHours() * 60 * 60;
     }
     $scope.getPatterns = function() {
         Line.getPatterns({ line: $scope.line_id, is_forward: $scope.isForward }, function(patterns) {
             angular.forEach(patterns, function(pattern, patternId) {
                 TripPattern.getStops({pattern: pattern.pk}, function(retrieved_pattern) {
-                    $scope.patterns[pattern.pk] = { pk: pattern.pk, stops: retrieved_pattern};
+                    $scope.patterns[pattern.pk] = pattern
+                    $scope.patterns[pattern.pk].stops = retrieved_pattern;
                     $scope.current_stops = $scope.getStops();
                     angular.forEach(retrieved_pattern, function(stop, stopIndex) {
-                        $scope.$watch('pattern['+patternId+'].stops['+stopIndex+'].departure_delta', $scope.handleTripTimeChangeListener(patternId, stopIndex));
+                        $scope.$watch('patterns['+pattern.pk+'].stops['+stopIndex+'].departure_time', $scope.handleTripTimeChangeListener(pattern, stopIndex));
                     });
                 });
                 TripPattern.getTrips({pattern: pattern.pk}, function(trips) {
                     var first = true;
                     angular.forEach(trips, function(trip) {
-                        // stops: $scope.patterns[pattern].stops
-                        $scope.trips.push({ pk: trip.pk, first: first, pattern: pattern.pk, start_time: trip.start_time });
+                        trip.first = first;
+                        trip.start_time_written = $scope.printTime($scope.parseSeconds(trip.start_time))
+                        trip.stops = $scope.cloneStops(pattern.pk, trip.start_time);
+                        $scope.trips.push(trip);
                         var tripIndex = $scope.trips.length - 1;
-                        $scope.$watch('trips['+tripIndex+'].start_time', $scope.handleTripStartChangeListener(tripIndex));
+                        $scope.$watch('trips['+tripIndex+'].start_time_written', $scope.handleTripStartChangeListener(tripIndex));
                         if (first) {
+                            pattern.trip_index = tripIndex;
+                            angular.forEach($scope.patterns[pattern.pk].stops, function(stop) {
+                               stop.departure_time = $scope.printTime($scope.parseSeconds(trip.start_time + stop.departure_delta))
+                            });
                             first = false;
                         }
                     });
@@ -239,4 +227,29 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
         });
     }
     $scope.getPatterns();
+//        $scope.recalculateDiffs = function() {
+//        $scope.diffs = [];
+//        var stops = $scope.getStops();
+//        var cur, next;
+//        for (var i = 0; i < stops.length-1; i++) {
+//            cur = $scope.parseTime(stops[i].time);
+//            next = $scope.parseTime(stops[i+1].time);
+//            $scope.diffs.push(next-cur);
+//        }
+//    }
+//    $scope.recalculateTrips = function() {
+//        for (var i = 1; i < $scope.trips.length; i++) {
+//            $scope.recalculateTrip($scope.trips[i]);
+//        }
+//    }
+//    $scope.recalculateTrip = function(trip) {
+//        var prev = $scope.parseTime(trip.stops[0].time);
+//        var newTime;
+//        for (var i = 1; i < trip.stops.length; i++) {
+//            newTime = new Date(prev);
+//            newTime.setMilliseconds(newTime.getMilliseconds() + $scope.diffs[i-1])
+//            trip.stops[i].time = $scope.printTime(newTime);
+//            prev = $scope.parseTime(trip.stops[i].time);
+//        }
+//    }
 }]);

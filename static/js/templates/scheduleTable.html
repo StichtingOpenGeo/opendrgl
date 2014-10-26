@@ -2,7 +2,7 @@
     <table class="table table-bordered">
         <tr>
             <th class="data-halte">Halte</th>
-            <th ng-repeat="trip in trips"> {{ trip.id }}</th>
+            <th ng-repeat="trip in trips">#{{ trip.pk }}&nbsp;<i class="glyphicon glyphicon-remove" ng-click="removeTrip(trip)"></i></th>
             <th><a ng-click="addTrip()">Nieuwe rit</a></th>
         </tr>
         <tr ng-repeat="(stopIndex, patternStop) in current_stops">
@@ -10,9 +10,9 @@
                 <span ng-bind="stops[patternStop.stop].name" />
             </td>
             <td ng-repeat="(tripIndex, trip) in trips">
-                <span ng-if="!trip.first && stopIndex > 0" ng-bind="trip.stops[stopIndex].time"></span>
-                <input ng-model="patterns[trip.pattern].stops[stopIndex].departure_delta" ng-if="trip.first" />
-                <input ng-model="trips[tripIndex].start_time" ng-if="!trip.first && stopIndex == 0" />
+                <span ng-if="!trip.first && stopIndex > 0">{{ trip.stops[stopIndex].time }}</span>
+                <input ng-model="patterns[trip.pattern].stops[stopIndex].departure_time" ng-if="trip.first && stopIndex != 0" />
+                <input ng-model="trips[tripIndex].start_time_written" ng-if="stopIndex == 0" />
                 <i class="glyphicon glyphicon-remove" ng-if="trip.first" ng-click="removeStop(patternStop)"></i>
             </td>
         </tr>

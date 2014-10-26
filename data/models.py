@@ -84,7 +84,7 @@ class CalenderExceptions(models.Model):
 
 class Trip(models.Model):
     pattern = models.ForeignKey(TripPattern)
-    start_time = models.TimeField()
+    start_time = models.IntegerField() # Seconds since midnight
     calendar = models.ForeignKey(Calendar, blank=True, null=True) # Null = every day
 
     class Meta:
