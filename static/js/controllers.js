@@ -21,9 +21,9 @@ drglApp.controller('LineOverviewCtrl', ['$scope', 'Line', function($scope, Line)
     $scope.lines = Line.query();
 }]);
 
-drglApp.controller('LineEditCtrl', ['$scope', 'Stop', function($scope, Stop) {
-    $scope.agency_id = 2
-    $scope.line_id = 1
+drglApp.controller('LineEditCtrl', ['$scope', '$routeParams', 'Line', 'Stop', function($scope, $routeParams, Line, Stop) {
+    $scope.line_id = $routeParams['line']
+    $scope.line = Line.get({pk: $routeParams['line']})
     $scope.stops = {}
     $scope.getStops = function() {
         Stop.query(function(stops) {
@@ -82,7 +82,7 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
     }
     $scope.addStop = function() {
         var stopId = parseInt($scope.getHighestStop()) + 1;
-        var s = new Stop({  agency: $scope.agency_id,
+        var s = new Stop({  agency: $scope.line.agency,
             name: $scope.newStop.name,
             planning_number: stopId,
             public_number: stopId })
