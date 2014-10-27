@@ -101,9 +101,15 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
                     order: $scope.getMaxOrder(pattern.stops) + 1  });
                 tps.$save(function(patternstop) {
                     pattern.stops.push(patternstop);
-                });
-                var stopIndex = $scope.patterns[pk].stops.length - 1
-                $scope.$watch('patterns[pk].stops['+stopIndex+'].departure_delta', $scope.handleTripTimeChangeListener(pattern, stopIndex));
+                    $scope.current_stops = $scope.getStops();
+                    var stopIndex = $scope.patterns[pk].stops.length - 1
+                    $scope.$watch('patterns['+pk+'].stops['+stopIndex+'].departure_time', $scope.handleTripTimeChangeListener(pattern, stopIndex));
+                }).then(function() {
+                    angular.forEach($scope.trips, function(trip, index) {
+                        trip.stops = $scope.cloneStops(trip.pattern, trip.start_time);
+                    });
+                })
+
             });
             $scope.newStop = { name: "" }
         });
@@ -257,6 +263,9 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
                             }
                             first = false;
                         }
+                    });
+                    angular.forEach($scope.trips, function(trip, index) {
+                        trip.stops = $scope.cloneStops(trip.pattern, trip.start_time);
                     });
                 });
             });
