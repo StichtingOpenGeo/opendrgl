@@ -1,0 +1,8 @@
+<div class="line" ng-controller="LineEditCtrl as line">
+    <h2><span class="col-lg-1">Lijn</span><input name="linenumber" class="form-inline col-lg-1"><span class="col-lg-1">naar</span><input name="destination"/></h2>
+    <h3>Heen</h3>
+    <schedule-table ng-init="isForward = true"></schedule-table>
+
+    <h3>Terug</h3>
+    <schedule-table ng-init="isForward = false"></schedule-table>
+</div>

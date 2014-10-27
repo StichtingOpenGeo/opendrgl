@@ -19,20 +19,14 @@
         </div><!-- /.container-fluid -->
     </nav>
     <div class="container">
-        <div class="line" ng-controller="LineCtrl as line">
-            <h2><span class="col-lg-1">Lijn</span><input name="linenumber" class="form-inline col-lg-1"><span class="col-lg-1">naar</span><input name="destination"/></h2>
-            <h3>Heen</h3>
-            <schedule-table ng-init="isForward = true"></schedule-table>
-
-            <h3>Terug</h3>
-            <schedule-table ng-init="isForward = false"></schedule-table>
-        </div>
+        <div ng-view></div>
     </div>
 
     <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/static/bower_components/angular/angular.min.js"></script>
     <script src="/static/bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="/static/bower_components/angular-route/angular-route.js"></script>
     <script src="/static/bower_components/angular-resource/angular-resource.js"></script>
     <script src="/static/js/services.js"></script>
     <script src="/static/js/controllers.js"></script>

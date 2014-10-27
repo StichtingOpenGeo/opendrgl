@@ -2,7 +2,7 @@
  * Created by joelthuis on 23/08/14.
  */
 
-var drglApp = angular.module('drglApp', ['ngCookies', 'drglServices']);
+var drglApp = angular.module('drglApp', ['ngCookies', 'ngRoute', 'drglServices']);
 
 drglApp.run(function($http, $cookies) {
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
@@ -17,7 +17,11 @@ drglApp.directive('scheduleTable', function() {
     };
 });
 
-drglApp.controller('LineCtrl', ['$scope', 'Stop', function($scope, Stop) {
+drglApp.controller('LineOverviewCtrl', ['$scope', 'Line', function($scope, Line) {
+    $scope.lines = Line.query();
+}]);
+
+drglApp.controller('LineEditCtrl', ['$scope', 'Stop', function($scope, Stop) {
     $scope.agency_id = 2
     $scope.line_id = 1
     $scope.stops = {}
@@ -285,3 +289,16 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
 //        }
 //    }
 }]);
+
+
+drglApp.config(function($routeProvider) {
+    $routeProvider
+        .when('/line/:line', {
+            templateUrl: 'js/templates/line_edit.html',
+            controller: 'LineEditCtrl'
+        })
+        .when('/', {
+            templateUrl: 'js/templates/line_overview.html',
+            controller: 'LineOverviewCtrl'
+        });
+});
