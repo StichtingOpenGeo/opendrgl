@@ -19,6 +19,15 @@ drglApp.directive('scheduleTable', function() {
 
 drglApp.controller('LineOverviewCtrl', ['$scope', 'Line', function($scope, Line) {
     $scope.lines = Line.query();
+    $scope.agency = 2
+    $scope.newLine = {}
+    $scope.addLine = function() {
+        var line = new Line({ public_number: $scope.newLine.number, planning_number: $scope.newLine.number, agency: $scope.agency  });
+        line.$save(function() {
+            $scope.newLine = {};
+            $scope.lines = Line.query(); // Reload
+        })
+    }
 }]);
 
 drglApp.controller('LineEditCtrl', ['$scope', '$routeParams', 'Line', 'Stop', function($scope, $routeParams, Line, Stop) {
@@ -300,7 +309,10 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
 }]);
 
 
-drglApp.config(function($routeProvider) {
+drglApp.config(['$routeProvider', '$resourceProvider', function($routeProvider, $resourceProvider) {
+
+    $resourceProvider.defaults.stripTrailingSlashes = false;
+
     $routeProvider
         .when('/line/:line', {
             templateUrl: 'js/templates/line_edit.html',
@@ -310,4 +322,4 @@ drglApp.config(function($routeProvider) {
             templateUrl: 'js/templates/line_overview.html',
             controller: 'LineOverviewCtrl'
         });
-});
+}]);

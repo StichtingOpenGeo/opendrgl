@@ -10,4 +10,9 @@
         <td></td>
         <td><a href="#line/{{ line.pk }}" class="btn btn-primary btn-xs">Bewerk</a></td>
     </tr>
+    <tr>
+        <td><input ng-model="newLine.number"></td>
+        <td><input ng-model="newLine.destination"></td>
+        <td><a href="" ng-click="addLine()" class="btn btn-success btn-xs">Toevoegen</a></td>
+    </tr>
 </table>
