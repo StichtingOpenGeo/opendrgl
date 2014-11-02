@@ -19,7 +19,7 @@ drglApp.directive('scheduleTable', function() {
 
 drglApp.controller('LineOverviewCtrl', ['$scope', 'Line', function($scope, Line) {
     $scope.lines = Line.query();
-    $scope.agency = 2
+    $scope.agency = 2; 
     $scope.newLine = {}
     $scope.addLine = function() {
         var line = new Line({ public_number: $scope.newLine.number, planning_number: $scope.newLine.number, agency: $scope.agency  });
