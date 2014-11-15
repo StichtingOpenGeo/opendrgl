@@ -12,7 +12,8 @@ drglServices.factory('Line', ['$resource', function($resource) {
 }]);
 
 drglServices.factory('Stop', ['$resource', function($resource) {
-    return $resource('/data/stop/', {'pk': '@pk'}, {});
+    return $resource('/data/stop/', {'pk': '@pk'},
+        {getMaxNumber : {method: "GET", url: '/data/stop/max/'} });
 }]);
 
 drglServices.factory('TripPattern', ['$resource', function($resource) {

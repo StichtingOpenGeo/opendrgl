@@ -13,7 +13,10 @@ drglApp.run(function($http, $cookies) {
 drglApp.directive('scheduleTable', function() {
     return {
         restrict: 'E',
-        templateUrl: 'js/templates/scheduleTable.html'
+        templateUrl: 'js/templates/scheduleTable.html',
+        scope: {
+            lineDirectionForward: "="
+        }
     };
 });
 
@@ -90,17 +93,14 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
         });
     }
     $scope.addStop = function() {
-        var stopId = parseInt($scope.getHighestStop()) + 1;
-        var s = new Stop({  agency: $scope.line.agency,
-            name: $scope.newStop.name,
-            planning_number: stopId,
-            public_number: stopId })
+        var s = new Stop({  agency: $scope.$parent.$parent.line.agency,
+            name: $scope.newStop.name })
         s.$save(function(stop) {
-            $scope.stops[stop.pk] = stop;
+            $scope.$parent.$parent.stops[stop.pk] = stop;
             if (Object.keys($scope.patterns).length == 0) {
-                var tp = new TripPattern({line: $scope.line_id, is_forward: $scope.isForward})
+                var tp = new TripPattern({line: $scope.$parent.$parent.line_id, is_forward: $scope.$parent.lineDirectionForward})
                 tp.$save(function(pattern) {
-                    pattern.stops = []
+                    pattern.stops = [stop]
                     $scope.patterns[pattern.pk] = pattern;
                     $scope.addTrip() /* add atleast one trip*/
                 });
@@ -244,7 +244,7 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
         return date.getSeconds() + date.getMinutes() * 60 + date.getHours() * 60 * 60;
     }
     $scope.getPatterns = function() {
-        Line.getPatterns({ line: $scope.line_id, is_forward: $scope.isForward }, function(patterns) {
+        Line.getPatterns({ line: $scope.$parent.$parent.line_id, is_forward: $scope.$parent.lineDirectionForward }, function(patterns) {
             angular.forEach(patterns, function(pattern, patternId) {
                 TripPattern.getStops({pattern: pattern.pk}, function(retrieved_pattern) {
                     $scope.patterns[pattern.pk] = pattern
@@ -278,6 +278,8 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
                     });
                 });
             });
+        }, function(error) {
+            console.log("Got an error: " + error.status );
         });
     }
     $scope.getPatterns();

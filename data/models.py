@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Max
+
 
 class Agency(models.Model):
     datacode = models.CharField(max_length=5, unique=True)
@@ -11,7 +13,7 @@ class Agency(models.Model):
 class Stop(models.Model):
     agency = models.ForeignKey(Agency)
     public_number = models.CharField(max_length=10)
-    planning_number = models.CharField(max_length=10, unique=True)
+    planning_number = models.CharField(max_length=10)
     name = models.CharField(max_length=100)
     city = models.CharField(max_length=25, blank=True, null=True)
     # TODO: Make this Geo field
@@ -22,7 +24,23 @@ class Stop(models.Model):
         return self.public_number;
 
     class Meta:
-        unique_together = ('agency', 'public_number')
+        unique_together = (('agency', 'public_number'), ('agency', 'planning_number'))
+
+    def get_next_number(self, agency):
+        data = Stop.objects.filter(agency_id=agency).aggregate(Max('planning_number'))
+        if 'planning_number__max' and data['planning_number__max'] is not None:
+            return int(data['planning_number__max']) + 1
+        else:
+            return 1
+
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.planning_number is None or self.planning_number == '':
+            self.planning_number = self.get_next_number(self.agency)
+        if self.public_number is None or self.public_number == '':
+            self.public_number = self.planning_number
+        super(Stop, self).save(force_insert, force_update, using, update_fields)
+
 
 class StopProperty(models.Model):
     stop = models.ForeignKey(Stop)
@@ -84,7 +102,7 @@ class CalenderExceptions(models.Model):
 
 class Trip(models.Model):
     pattern = models.ForeignKey(TripPattern)
-    start_time = models.IntegerField() # Seconds since midnight
+    start_time = models.PositiveIntegerField() # Seconds since midnight
     calendar = models.ForeignKey(Calendar, blank=True, null=True) # Null = every day
 
     class Meta:
