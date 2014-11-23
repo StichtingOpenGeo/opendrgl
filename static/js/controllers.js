@@ -13,7 +13,7 @@ drglApp.run(function($http, $cookies) {
 drglApp.directive('scheduleTable', function() {
     return {
         restrict: 'E',
-        templateUrl: 'js/templates/scheduleTable.html',
+        templateUrl: 'js/templates/schedule_table.html',
         scope: {
             lineDirectionForward: "="
         }
@@ -78,14 +78,14 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
         pattern = $scope.patterns[trip.pattern]
         return pattern.stops[index].time;
     }
-    $scope.addTrip = function() {
+    $scope.addTrip = function(first) {
         $scope.lastTripId += 1;
         var defaultPattern = $scope.patterns[Object.keys($scope.patterns)[0]].pk;
         var startTime = ($scope.trips.length) ? $scope.trips[$scope.trips.length-1].start_time + 60 : 32400;
         var t = new Trip({ pattern: defaultPattern, start_time: startTime });
         t.$save(function(t) {
             t.stops = $scope.cloneStops(defaultPattern, startTime);
-            t.first = false;
+            t.first = first;
             t.start_time_written = $scope.printTime($scope.parseSeconds(startTime))
             $scope.trips.push(t);
             var tripIndex = $scope.trips.length - 1
@@ -102,7 +102,7 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
                 tp.$save(function(pattern) {
                     pattern.stops = [stop]
                     $scope.patterns[pattern.pk] = pattern;
-                    $scope.addTrip() /* add atleast one trip*/
+                    $scope.addTrip(true) /* add atleast one trip*/
                 });
             }
             angular.forEach($scope.patterns, function (pattern, pk) {
@@ -123,14 +123,8 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
             $scope.newStop = { name: "" }
         });
     }
-    $scope.getHighestStop = function() {
-        var highest = -1;
-        for (key in $scope.stops) {
-            if (parseInt($scope.stops[key].public_number) > highest) {
-                highest = parseInt($scope.stops[key].public_number)
-            }
-        }
-        return highest;
+    $scope.getStopDetails = function(stop_id) {
+        return $scope.$parent.$parent.stops[stop_id];
     }
     $scope.getMaxOrder = function(arr) {
         var highest = -1;
@@ -173,6 +167,14 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
         Trip.delete({pk: trip.pk}, function(deleted) {
             var i = $scope.trips.indexOf(trip)
             $scope.trips.splice(i, 1)
+            if (trip.first) {
+                /* Find the new first pattern */
+                $scope.trips[0].first = true;
+                /* Recalculate our departure_times */
+                angular.forEach($scope.patterns[$scope.trips[0].pattern].stops, function (stop) {
+                    stop.departure_time = $scope.printTime($scope.parseSeconds($scope.trips[0].start_time + stop.departure_delta))
+                });
+            }
         });
     }
     $scope.parseTime = function(input) {
@@ -265,7 +267,8 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
                         $scope.$watch('trips['+tripIndex+'].start_time_written', $scope.handleTripStartChangeListener(tripIndex));
                         if (first) {
                             pattern.trip_index = tripIndex;
-                            if ($scope.patterns[pattern.pk] && $scope.patterns[pattern.pk].stops > 0) {
+                            if ($scope.patterns[pattern.pk] && $scope.patterns[pattern.pk].stops.length > 0) {
+                                console.log("Calculating time");
                                 angular.forEach($scope.patterns[pattern.pk].stops, function (stop) {
                                     stop.departure_time = $scope.printTime($scope.parseSeconds(trip.start_time + stop.departure_delta))
                                 });
@@ -283,31 +286,6 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
         });
     }
     $scope.getPatterns();
-//        $scope.recalculateDiffs = function() {
-//        $scope.diffs = [];
-//        var stops = $scope.getStops();
-//        var cur, next;
-//        for (var i = 0; i < stops.length-1; i++) {
-//            cur = $scope.parseTime(stops[i].time);
-//            next = $scope.parseTime(stops[i+1].time);
-//            $scope.diffs.push(next-cur);
-//        }
-//    }
-//    $scope.recalculateTrips = function() {
-//        for (var i = 1; i < $scope.trips.length; i++) {
-//            $scope.recalculateTrip($scope.trips[i]);
-//        }
-//    }
-//    $scope.recalculateTrip = function(trip) {
-//        var prev = $scope.parseTime(trip.stops[0].time);
-//        var newTime;
-//        for (var i = 1; i < trip.stops.length; i++) {
-//            newTime = new Date(prev);
-//            newTime.setMilliseconds(newTime.getMilliseconds() + $scope.diffs[i-1])
-//            trip.stops[i].time = $scope.printTime(newTime);
-//            prev = $scope.parseTime(trip.stops[i].time);
-//        }
-//    }
 }]);
 
 

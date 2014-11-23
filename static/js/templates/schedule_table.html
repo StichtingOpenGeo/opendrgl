@@ -3,11 +3,11 @@
         <tr>
             <th class="data-halte">Halte</th>
             <th ng-repeat="trip in trips">#{{ trip.pk }}&nbsp;<i class="glyphicon glyphicon-remove" ng-click="removeTrip(trip)"></i></th>
-            <th><a ng-click="addTrip()">Nieuwe rit</a></th>
+            <th><a ng-click="addTrip(false)" ng-if="trips.length">Nieuwe rit</a></th>
         </tr>
         <tr ng-repeat="(stopIndex, patternStop) in current_stops">
             <td>
-                <span ng-bind="stops[patternStop.stop].name" />
+                <span ng-bind="getStopDetails(patternStop.stop).name" />
             </td>
             <td ng-repeat="(tripIndex, trip) in trips">
                 <span ng-if="!trip.first && stopIndex > 0">{{ trip.stops[stopIndex].time }}</span>

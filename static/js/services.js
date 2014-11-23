@@ -4,8 +4,6 @@
 
 var drglServices = angular.module('drglServices', ['ngResource']);
 
-drglServices.factory('Line', [''])
-
 drglServices.factory('Line', ['$resource', function($resource) {
     return $resource('/data/line/', {'pk': '@pk'},
         {getPatterns : {method: "GET", url: '/data/line/patterns/', isArray: true}});

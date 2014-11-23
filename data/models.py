@@ -13,7 +13,7 @@ class Agency(models.Model):
 class Stop(models.Model):
     agency = models.ForeignKey(Agency)
     public_number = models.CharField(max_length=10)
-    planning_number = models.CharField(max_length=10)
+    planning_number = models.PositiveIntegerField(max_length=10)
     name = models.CharField(max_length=100)
     city = models.CharField(max_length=25, blank=True, null=True)
     # TODO: Make this Geo field
@@ -26,17 +26,17 @@ class Stop(models.Model):
     class Meta:
         unique_together = (('agency', 'public_number'), ('agency', 'planning_number'))
 
-    def get_next_number(self, agency):
+    @staticmethod
+    def get_next_number(agency):
         data = Stop.objects.filter(agency_id=agency).aggregate(Max('planning_number'))
         if 'planning_number__max' and data['planning_number__max'] is not None:
             return int(data['planning_number__max']) + 1
         else:
             return 1
 
-
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.planning_number is None or self.planning_number == '':
-            self.planning_number = self.get_next_number(self.agency)
+            self.planning_number = Stop.get_next_number(self.agency)
         if self.public_number is None or self.public_number == '':
             self.public_number = self.planning_number
         super(Stop, self).save(force_insert, force_update, using, update_fields)
