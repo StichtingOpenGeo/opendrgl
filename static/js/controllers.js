@@ -128,7 +128,7 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
     }
     $scope.getMaxOrder = function(arr) {
         var highest = -1;
-        for (key in arr) {
+        for (var key in arr) {
             var numOrder = parseInt(arr[key].order)
             if (numOrder > highest) {
                 highest = numOrder;
@@ -164,6 +164,10 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
         });
     }
     $scope.removeTrip = function(trip) {
+        if ($scope.trips.length == 1) {
+            return; // Can't delete last trip
+        }
+
         Trip.delete({pk: trip.pk}, function(deleted) {
             var i = $scope.trips.indexOf(trip)
             $scope.trips.splice(i, 1)
@@ -184,8 +188,16 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
         var out = new Date();
         var split = input.split(':');
         out.setHours(parseInt(split[0]));
-        out.setMinutes(parseInt(split[1]));
-        out.setSeconds(parseInt(split[2]));
+        if (split.length > 1 && split[1] != "") {
+            out.setMinutes(parseInt(split[1]));
+        } else {
+            out.setMinutes(0);
+        }
+        if (split.length > 2 && split[2] != "") {
+            out.setSeconds(parseInt(split[2]));
+        } else {
+            out.setSeconds(0);
+        }
         return out;
     }
     $scope.parseTimeToSeconds = function(input) {
@@ -193,7 +205,14 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
             return null;
         }
         var split = input.split(':');
-        return parseInt(split[0]) * 60*60 + parseInt(split[1]) * 60 + parseInt(split[2]) ;
+        var out = parseInt(split[0]) * 60*60;
+        if (split.length > 1 && split[1] != "") {
+            out += parseInt(split[1]) * 60;
+        }
+        if (split.length > 2 && split[2] != "") {
+            out += parseInt(split[2]);
+        }
+        return out;
     }
     $scope.padTime = function(input) {
         if (input < 10) {

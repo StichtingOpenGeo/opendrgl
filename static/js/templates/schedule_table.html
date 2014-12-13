@@ -2,7 +2,7 @@
     <table class="table table-bordered">
         <tr>
             <th class="data-halte">Halte</th>
-            <th ng-repeat="trip in trips">#{{ trip.pk }}&nbsp;<i class="glyphicon glyphicon-remove" ng-click="removeTrip(trip)"></i></th>
+            <th ng-repeat="trip in trips">#{{ trip.pk }}&nbsp;<i class="glyphicon glyphicon-remove" ng-if="trips.length > 1" ng-click="removeTrip(trip)"></i></th>
             <th><a ng-click="addTrip(false)" ng-if="trips.length">Nieuwe rit</a></th>
         </tr>
         <tr ng-repeat="(stopIndex, patternStop) in current_stops">
