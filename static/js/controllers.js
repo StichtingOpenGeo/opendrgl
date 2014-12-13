@@ -106,9 +106,14 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
                 });
             }
             angular.forEach($scope.patterns, function (pattern, pk) {
+                var lastStop = pattern.stops[pattern.stops.length - 1];
+                var departure_delta = (lastStop) ? lastStop.departure_delta : 0;
                 var tps = new TripPatternStop({pattern: pattern.pk, stop: stop.pk,
-                    order: $scope.getMaxOrder(pattern.stops) + 1  });
+                    order: $scope.getMaxOrder(pattern.stops) + 1,
+                    arrival_delta: departure_delta,
+                    departure_delta: departure_delta });
                 tps.$save(function(patternstop) {
+                    patternstop.departure_time = $scope.printTime($scope.parseSeconds($scope.trips[pattern.trip_index].start_time + departure_delta))
                     pattern.stops.push(patternstop);
                     $scope.current_stops = $scope.getStops();
                     var stopIndex = $scope.patterns[pk].stops.length - 1

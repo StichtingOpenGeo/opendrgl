@@ -17,7 +17,7 @@ class TripPatternStopListView(BaseNgView):
     query_slug = 'pattern'
 
     def get_data(self, param):
-        return self.model.objects.filter(pattern_id=param)
+        return self.model.objects.order_by('order').filter(pattern_id=param)
 
 class TripPatternTripView(BaseNgView):
     model = Trip
