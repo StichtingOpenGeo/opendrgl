@@ -42,8 +42,8 @@ class Command(BaseCommand):
                 quay.stop_id = self.stopplace_cache[row['stopplacecode']]
                 quay.public_code = row['quaycode']
                 coords = rd_wgs84(float(row['rd_x']), float(row['rd_y']))
-                quay.lat = coords[0]
-                quay.lng = coords[1]
+                quay.lat = coords[1]
+                quay.lng = coords[0]
                 quay.name = row['quayname']
                 quay.city = row['town']
                 quay.save()
