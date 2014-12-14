@@ -4,9 +4,7 @@ from data.views import TripPatternView, TripPatternStopView, StopView, TripView,
     LineTripPatternView, TripPatternStopListView, LineView, TripPatternTripView
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'opendrgl.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
+    url(r'', include('chb.urls')),
 
     url(r'^data/line/patterns/?$', LineTripPatternView.as_view(), name='line_detail'),
     url(r'^data/line/?$', LineView.as_view(), name='line_detail'),
@@ -16,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^data/trip_pattern/?$', TripPatternView.as_view(), name='trip_pattern_crud'),
     url(r'^data/trip_pattern_stop/?$', TripPatternStopView.as_view(), name='trip_pattern_stop_crud'),
     url(r'^data/trip/?$', TripView.as_view(), name='trip_crud'),
+
 
     url(r'^admin/', include(admin.site.urls))
 )

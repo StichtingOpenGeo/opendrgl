@@ -40,6 +40,7 @@ INSTALLED_APPS = (
 
     # Our apps
     'data',
+    'chb',
 
     # Third-party libs
     'djangular'
@@ -58,7 +59,6 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'opendrgl.urls'
 
 WSGI_APPLICATION = 'opendrgl.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases

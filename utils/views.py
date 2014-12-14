@@ -2,6 +2,7 @@ from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.http import Http404
 from django.views.generic import DetailView
 from djangular.views.crud import NgCRUDView
+from preserialize.serialize import serialize
 
 __author__ = 'joelthuis'
 
@@ -19,3 +20,15 @@ class BaseNgView(NgCRUDView, DetailView):
             return self.build_json_response(data)
         except ObjectDoesNotExist:
             raise Http404
+
+class TreeNgView(BaseNgView):
+    """
+    Add support for serializing with one or more relations
+    """
+    relations = {}
+
+    def serialize_queryset(self, queryset):
+        """
+        Return serialized queryset or single object as python dictionary
+        """
+        return serialize(queryset, fields=self.get_fields(), related=self.related)

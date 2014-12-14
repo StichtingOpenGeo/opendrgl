@@ -2,7 +2,7 @@
  * Created by joelthuis on 23/08/14.
  */
 
-var drglApp = angular.module('drglApp', ['ngCookies', 'ngRoute', 'drglServices']);
+var drglApp = angular.module('drglApp', ['ngCookies', 'ngRoute', 'drglServices', 'ui.bootstrap']);
 
 drglApp.run(function($http, $cookies) {
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
@@ -93,40 +93,55 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
         });
     }
     $scope.addStop = function() {
-        var s = new Stop({  agency: $scope.$parent.$parent.line.agency,
-            name: $scope.newStop.name })
-        s.$save(function(stop) {
+        var s = new Stop({
+            agency: $scope.$parent.$parent.line.agency,
+            name: $scope.newStop.name
+        })
+        s.$save(function (stop) {
             $scope.$parent.$parent.stops[stop.pk] = stop;
             if (Object.keys($scope.patterns).length == 0) {
-                var tp = new TripPattern({line: $scope.$parent.$parent.line_id, is_forward: $scope.$parent.lineDirectionForward})
-                tp.$save(function(pattern) {
+                var tp = new TripPattern({
+                    line: $scope.$parent.$parent.line_id,
+                    is_forward: $scope.$parent.lineDirectionForward
+                })
+                tp.$save(function (pattern) {
                     pattern.stops = [stop]
                     $scope.patterns[pattern.pk] = pattern;
-                    $scope.addTrip(true) /* add atleast one trip*/
+                    $scope.addTrip(true)
+                    /* add atleast one trip*/
                 });
             }
             angular.forEach($scope.patterns, function (pattern, pk) {
                 var lastStop = pattern.stops[pattern.stops.length - 1];
                 var departure_delta = (lastStop) ? lastStop.departure_delta : 0;
-                var tps = new TripPatternStop({pattern: pattern.pk, stop: stop.pk,
+                var tps = new TripPatternStop({
+                    pattern: pattern.pk, stop: stop.pk,
                     order: $scope.getMaxOrder(pattern.stops) + 1,
                     arrival_delta: departure_delta,
-                    departure_delta: departure_delta });
-                tps.$save(function(patternstop) {
+                    departure_delta: departure_delta
+                });
+                tps.$save(function (patternstop) {
                     patternstop.departure_time = $scope.printTime($scope.parseSeconds($scope.trips[pattern.trip_index].start_time + departure_delta))
                     pattern.stops.push(patternstop);
                     $scope.current_stops = $scope.getStops();
                     var stopIndex = $scope.patterns[pk].stops.length - 1
-                    $scope.$watch('patterns['+pk+'].stops['+stopIndex+'].departure_time', $scope.handleTripTimeChangeListener(pattern, stopIndex));
-                }).then(function() {
-                    angular.forEach($scope.trips, function(trip, index) {
+                    $scope.$watch('patterns[' + pk + '].stops[' + stopIndex + '].departure_time', $scope.handleTripTimeChangeListener(pattern, stopIndex));
+                }).then(function () {
+                    angular.forEach($scope.trips, function (trip, index) {
                         trip.stops = $scope.cloneStops(trip.pattern, trip.start_time);
                     });
                 })
 
             });
-            $scope.newStop = { name: "" }
+            $scope.newStop = {name: ""}
         });
+    }
+    $scope.getAllStops = function() {
+        var out = []
+        for (var key in $scope.$parent.$parent.stops) {
+            out.push($scope.$parent.$parent.stops[key]);
+        }
+        return out;
     }
     $scope.getStopDetails = function(stop_id) {
         return $scope.$parent.$parent.stops[stop_id];
