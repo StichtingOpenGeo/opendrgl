@@ -9,7 +9,7 @@ class ChbStop(models.Model):
 
 class ChbQuay(models.Model):
     public_code = models.CharField(max_length=13, unique=True)
-    stop = models.ForeignKey(ChbStop)
+    stop = models.ForeignKey(ChbStop, related_name="quays")
     name = models.CharField(max_length=100)
     city = models.CharField(max_length=100, blank=True, null=True)
     # TODO: Make this Geo field

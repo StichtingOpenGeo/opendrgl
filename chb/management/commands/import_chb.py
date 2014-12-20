@@ -18,7 +18,7 @@ class Command(BaseCommand):
     def import_stopplaces(self, folder):
         ChbStop.objects.all().delete()
         with open(folder+'opendrgl_stopplace.csv', 'rb') as csvfile:
-            stopplace = csv.DictReader(csvfile, delimiter=',', quotechar='|')
+            stopplace = csv.DictReader(csvfile, delimiter=',', quotechar='"')
             i = 0
             for row in stopplace:
                 stop = ChbStop()
@@ -35,7 +35,7 @@ class Command(BaseCommand):
     def import_quays(self, folder):
         ChbQuay.objects.all().delete()
         with open(folder+'opendrgl_quay.csv', 'rb') as csvfile:
-            quay = csv.DictReader(csvfile, delimiter=',', quotechar='|')
+            quay = csv.DictReader(csvfile, delimiter=',', quotechar='"')
             i = 0
             for row in quay:
                 quay = ChbQuay()

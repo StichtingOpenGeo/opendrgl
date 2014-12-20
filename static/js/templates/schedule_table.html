@@ -18,7 +18,8 @@
         </tr>
         <tr id="newRow">
             <td>
-                <input ng-model="newStop.name" typeahead="stop as stop.name for stop in getAllStops() | filter:$viewValue | limitTo:8" typeahead-loading="loadingLocations" placeholder="Nieuwe halte" />
+                <input ng-model="newStop.name" typeahead="stop as stop.name for stop in getStops($viewValue)"
+                       typeahead-loading="loadingLocations" typeahead-template-url="js/templates/autocomplete.html" placeholder="Nieuwe halte" />
                 <a ng-click="addStop()">Add</a>
             </td>
         </tr>

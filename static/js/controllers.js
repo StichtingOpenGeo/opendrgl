@@ -47,8 +47,8 @@ drglApp.controller('LineEditCtrl', ['$scope', '$routeParams', 'Line', 'Stop', fu
     $scope.getStops();
 }]);
 
-drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatternStop', 'Trip', 'Stop',
-    function ($scope, Line, TripPattern, TripPatternStop, Trip, Stop) {
+drglApp.controller('ScheduleCtrl', ['$scope', '$http', 'Line', 'TripPattern', 'TripPatternStop', 'Trip', 'Stop',
+    function ($scope, $http, Line, TripPattern, TripPatternStop, Trip, Stop) {
     $scope.lastTripId = 2;
     $scope.newItem = { name: ""}
     $scope.current_stops = [];
@@ -136,13 +136,14 @@ drglApp.controller('ScheduleCtrl', ['$scope', 'Line', 'TripPattern', 'TripPatter
             $scope.newStop = {name: ""}
         });
     }
-    $scope.getAllStops = function() {
-        var out = []
-        for (var key in $scope.$parent.$parent.stops) {
-            out.push($scope.$parent.$parent.stops[key]);
-        }
-        return out;
-    }
+    $scope.getStops = function(val) {
+        return $http.get('/data/chb?name='+val, {}).then(function(response){
+            return response.data.map(function(stop) {
+                stop['label'] = stop.city+", "+stop.name
+                return stop
+            });
+        });
+    };
     $scope.getStopDetails = function(stop_id) {
         return $scope.$parent.$parent.stops[stop_id];
     }
