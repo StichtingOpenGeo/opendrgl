@@ -33,17 +33,30 @@ openDrglServices.service('LineService', ['LineResource', function(LineResource) 
 
 }]);
 
-openDrglServices.service('StopService', ['StopResource', function(StopResource) {
+openDrglServices.service('StopService', ['$q', 'StopResource', function($q, StopResource) {
+
+    var stopCache;
 
     this.getAllStops = function() {
+        if (stopCache) {
+            return $q.when(stopCache);
+        }
         /* Get all the stops but alias them by id */
         return StopResource.query().$promise.then(function(stops) {
             var result_dict = {};
             angular.forEach(stops, function(stop) {
                 result_dict[stop.pk] = stop;
             });
+            stopCache = result_dict;
             return result_dict;
         });
+    }
+
+    this.addStopToCache = function(stop) {
+        if (!stopCache) {
+            stopCache = {};
+        }
+        stopCache[stop.pk] = stop;
     }
 
     this.newStop = function(args) {

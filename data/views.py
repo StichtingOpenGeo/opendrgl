@@ -24,7 +24,7 @@ class TripPatternTripView(BaseNgView):
     query_slug = 'pattern'
 
     def get_data(self, param):
-        return self.model.objects.filter(pattern_id=param)
+        return self.model.objects.order_by('start_time').filter(pattern_id=param)
 
 # Default views
 

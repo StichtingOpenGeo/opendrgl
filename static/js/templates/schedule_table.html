@@ -18,7 +18,7 @@
         </tr>
         <tr id="newRow">
             <td>
-                <input ng-model="newStop.name" typeahead="stop as stop.name for stop in getStops($viewValue)"
+                <input ng-model="newStop.name" typeahead="stop as stop.name for stop in getStopSearch($viewValue)"
                        typeahead-loading="loadingLocations" typeahead-template-url="js/templates/autocomplete.html"
                        typeahead-on-select="selectNewStop($item, $model, $label)"
                        placeholder="Nieuwe halte" />
