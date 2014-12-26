@@ -3,7 +3,7 @@ import csv
 from chb.models import ChbStop, ChbQuay
 from utils.geo import rd_wgs84
 
-__author__ = 'joelthuis'
+__author__ = 'Joel Haasnoot'
 
 class Command(BaseCommand):
     args = '<folder>'

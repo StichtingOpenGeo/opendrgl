@@ -43,7 +43,8 @@ INSTALLED_APPS = (
     'chb',
 
     # Third-party libs
-    'djangular'
+    'djangular',
+    'rest_framework'
 )
 
 MIDDLEWARE_CLASSES = (

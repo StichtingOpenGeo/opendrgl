@@ -1,29 +1,110 @@
 /**
- * Created by joelthuis on 24/10/14.
+ * Created by Joel Haasnoot on 26/12/14.
  */
 
-var drglServices = angular.module('drglServices', ['ngResource']);
+var openDrglServices = angular.module('openDrglServices', ['openDrglResources']);
 
-drglServices.factory('Line', ['$resource', function($resource) {
-    return $resource('/data/line/', {'pk': '@pk'},
-        {getPatterns : {method: "GET", url: '/data/line/patterns/', isArray: true}});
+openDrglServices.service('LineService', ['LineResource', function(LineResource) {
+
+    this.getLines = function() {
+        return LineResource.query().$promise;
+    };
+
+    this.getLine = function(line_id) {
+        return LineResource.get({'pk' : line_id }).$promise;
+    };
+
+    this.getTripPatterns = function(id, is_forward){
+        return LineResource.getPatterns({'line': id, 'is_forward': is_forward}).$promise;
+    };
+
+    this.createLine = function(args) {
+        return new LineResource(args);
+    };
+
+    this.saveLine = function(line) {
+        return line.$save();
+    }
+
+    this.deleteLine = function(id) {
+        return LineResource.delete({'pk' : id}).$promise;
+    }
+
+
 }]);
 
-drglServices.factory('Stop', ['$resource', function($resource) {
-    return $resource('/data/stop/', {'pk': '@pk'},
-        {getMaxNumber : {method: "GET", url: '/data/stop/max/'} });
+openDrglServices.service('StopService', ['StopResource', function(StopResource) {
+
+    this.getAllStops = function() {
+        /* Get all the stops but alias them by id */
+        return StopResource.query().$promise.then(function(stops) {
+            var result_dict = {};
+            angular.forEach(stops, function(stop) {
+                result_dict[stop.pk] = stop;
+            });
+            return result_dict;
+        });
+    }
+
+    this.newStop = function(args) {
+        return new StopResource(args);
+    }
+
+    this.saveStop = function(stop) {
+        return stop.$save();
+    }
+
 }]);
 
-drglServices.factory('TripPattern', ['$resource', function($resource) {
-    return $resource('/data/trip_pattern/', {'pk': '@pk'},
-        {getStops : {method: "GET", url: '/data/trip_pattern/stops/', isArray: true},
-         getTrips : {method: "GET", url: '/data/trip_pattern/trips/', isArray: true}});
+openDrglServices.service('TripService', ['TripResource', function(TripResource) {
+
+    this.getTrip = function(id) {
+        return TripResource.get({pk: id}).$promise;
+    }
+
+    this.createTrip = function(args) {
+        return new TripResource(args);
+    }
+
+    this.saveTrip = function(trip) {
+        return trip.$save();
+    }
+
+    this.deleteTrip = function(id) {
+        return TripResource.delete({pk: id}).$promise;
+    }
+
 }]);
 
-drglServices.factory('TripPatternStop', ['$resource', function($resource) {
-    return $resource('/data/trip_pattern_stop/', {'pk': '@pk'}, {});
+openDrglServices.service('TripPatternService', ['TripPatternResource', function(TripPatternResource) {
+
+    this.getStops = function(pattern_id) {
+        return TripPatternResource.getStops({pattern: pattern_id}).$promise;
+    }
+
+    this.getTrips = function(pattern_id) {
+        return TripPatternResource.getTrips({pattern: pattern_id}).$promise;
+    }
+
 }]);
 
-drglServices.factory('Trip', ['$resource', function($resource) {
-    return $resource('/data/trip/', {'pk': '@pk'}, {});
+openDrglServices.service('TripPatternStopService', ['TripPatternStopResource', function(TripPatternStopResource) {
+
+
+    this.newTripPatternStop = function(args) {
+        return new TripPatternStopResource(args);
+    }
+
+    this.saveTripPatternStop = function(tps) {
+        return tps.$save();
+    }
+
+    this.deleteTripPatternStop = function(tps_id) {
+        return TripPatternResource.delete({pk: tps_id}).$promise;
+    }
+
+    this.getTripPatternStop = function(tps_id) {
+        return TripPatternStopResource.get({pk: tps_id}).$promise;
+    }
+
 }]);

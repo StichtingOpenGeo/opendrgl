@@ -12,7 +12,7 @@ class Agency(models.Model):
 
 class Stop(models.Model):
     agency = models.ForeignKey(Agency)
-    public_number = models.CharField(max_length=10)
+    public_number = models.CharField(max_length=13)
     planning_number = models.PositiveIntegerField(max_length=10)
     name = models.CharField(max_length=100)
     city = models.CharField(max_length=25, blank=True, null=True)
@@ -62,6 +62,15 @@ class Line(models.Model):
     class Meta:
         unique_together = (('agency', 'planning_number'), )
 
+    def save(self, *args, **kwargs):
+        create = not self.pk
+        super(Line, self).save(*args, **kwargs)
+        if create:
+            forward = TripPattern(line=self, is_forward=True)
+            forward.save()
+            backward = TripPattern(line=self, is_forward=False)
+            backward.save()
+
     def __str__(self):
         return "%s line %s" % (self.agency, self.public_number)
 
@@ -70,11 +79,18 @@ class TripPattern(models.Model):
     line = models.ForeignKey(Line, related_name='trippatterns')
     is_forward = models.BooleanField(default=True)
 
+    def save(self, *args, **kwargs):
+        create = not self.pk
+        super(TripPattern, self).save(*args, **kwargs)
+        if create:
+            trip = Trip(pattern=self, start_time=6*60*60)
+            trip.save()
+
 class TripPatternStop(models.Model):
     pattern = models.ForeignKey(TripPattern)
     order = models.PositiveSmallIntegerField()
     stop = models.ForeignKey(Stop)
-    arrival_delta = models.PositiveIntegerField(blank=True, null=True) # Seconds since first stop, 0 if order = 0
+    arrival_delta = models.PositiveIntegerField(blank=True, null=True)  # Seconds since first stop, 0 if order = 0
     departure_delta = models.PositiveIntegerField(blank=True, null=True)
 
     class Meta:
@@ -96,14 +112,14 @@ class Calendar(models.Model):
 
 class CalenderExceptions(models.Model):
     calender = models.ForeignKey(Calendar)
-    is_cancel = models.BooleanField(default=False) # Otherwise it's an addition
+    is_cancel = models.BooleanField(default=False)  # Otherwise it's an addition
     date = models.DateField()
 
 
 class Trip(models.Model):
     pattern = models.ForeignKey(TripPattern)
-    start_time = models.PositiveIntegerField() # Seconds since midnight
-    calendar = models.ForeignKey(Calendar, blank=True, null=True) # Null = every day
+    start_time = models.PositiveIntegerField()  # Seconds since midnight
+    calendar = models.ForeignKey(Calendar, blank=True, null=True)  # Null = every day
 
     class Meta:
         unique_together = (('pattern', 'start_time'), )

@@ -9,4 +9,4 @@ class StopSearchView(TreeNgView):
     related = {'stop': {'fields': ['name', 'city', 'public_code', 'type']}}
 
     def get_data(self, param):
-        return self.model.objects.filter(Q(name__icontains=param) | Q(city__icontains=param))[:10]
+        return self.model.objects.filter(Q(name__icontains=param) | Q(city__icontains=param))[:15]

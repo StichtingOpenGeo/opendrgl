@@ -1,6 +1,6 @@
 from osgeo.osr import SpatialReference, CoordinateTransformation
 
-__author__ = 'joelthuis'
+__author__ = 'Joel Haasnoot'
 
 def rd_wgs84(x, y):
     '''

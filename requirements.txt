@@ -4,3 +4,4 @@ django-angular
 django-websocket-redis
 django-preserialize
 gdal
+djangorestframework

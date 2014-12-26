@@ -4,7 +4,7 @@ from django.views.generic import DetailView
 from djangular.views.crud import NgCRUDView
 from preserialize.serialize import serialize
 
-__author__ = 'joelthuis'
+__author__ = 'Joel Haasnoot'
 
 
 class BaseNgView(NgCRUDView, DetailView):
