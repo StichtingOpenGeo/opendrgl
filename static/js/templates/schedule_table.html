@@ -1,29 +1,37 @@
-<div class="schedule" ng-controller="ScheduleCtrl as ctrl">
-    <table class="table table-bordered">
-        <tr>
-            <th class="data-halte">Halte</th>
-            <th ng-repeat="trip in trips">#{{ trip.pk }}&nbsp;<i class="glyphicon glyphicon-remove" ng-if="trips.length > 1" ng-click="removeTrip(trip)"></i></th>
-            <th><a ng-click="addTrip(false)" ng-if="trips.length">Nieuwe rit</a></th>
-        </tr>
-        <tr ng-repeat="(stopIndex, patternStop) in current_stops">
-            <td>
-                <span ng-bind="getStopDetails(patternStop.stop).name" />
-            </td>
-            <td ng-repeat="(tripIndex, trip) in trips">
-                <span ng-if="!trip.first && stopIndex > 0">{{ trip.stops[stopIndex].time }}</span>
-                <input ng-model="patterns[trip.pattern].stops[stopIndex].departure_time" ng-if="trip.first && stopIndex != 0" />
-                <input ng-model="trips[tripIndex].start_time_written" ng-if="stopIndex == 0" />
-                <i class="glyphicon glyphicon-remove" ng-if="trip.first" ng-click="removeStop(patternStop)"></i>
-            </td>
-        </tr>
-        <tr id="newRow">
-            <td>
-                <input ng-model="newStop.name" typeahead="stop as stop.name for stop in getStopSearch($viewValue)"
-                       typeahead-loading="loadingLocations" typeahead-template-url="js/templates/autocomplete.html"
-                       typeahead-on-select="selectNewStop($item, $model, $label)"
-                       placeholder="Nieuwe halte" />
-                <a ng-click="addStop()">Add</a>
-            </td>
-        </tr>
-    </table>
+<div class="schedule row" ng-controller="ScheduleCtrl as ctrl">
+    <div class="map col-lg-2 col-md-2" ng-controller="MapController as map">
+        <openlayers ol-center="center" ol-markers="stops" ol-layers="layers" height="400px">
+            <ol-marker ng-repeat="marker in stops" lat="marker.lat" lon="marker.lon" name="marker.name"></ol-marker>
+        </openlayers>
+    </div>
+    <div class="col-lg-10 col-md-10">
+        <table class="table table-bordered table-condensed table-hover">
+            <tr>
+                <th class="data-halte">Halte</th>
+                <th ng-repeat="trip in trips">#{{ trip.pk }}&nbsp;<i class="glyphicon glyphicon-remove warning glyphicon-right" ng-if="trips.length > 1" ng-click="removeTrip(trip)"></i></th>
+                <th><a ng-click="addTrip(false)" ng-if="trips.length" class="btn btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i>&nbsp;Nieuwe rit</a></th>
+            </tr>
+            <tr ng-repeat="(stopIndex, patternStop) in current_stops">
+                <th>
+                    <i class="glyphicon glyphicon-map-marker" ng-if="getStopDetails(patternStop.stop).lat > 0"></i>
+                    <span ng-bind="getStopDetails(patternStop.stop).name" />
+                </th>
+                <td ng-repeat="(tripIndex, trip) in trips" class="cell-time" ng-class="{info: trip.first}">
+                    <span ng-if="!trip.first && stopIndex > 0">{{ trip.stops[stopIndex].time }}</span>
+                    <input ng-model="patterns[trip.pattern].stops[stopIndex].departure_time" ng-if="trip.first && stopIndex != 0" />
+                    <input ng-model="trips[tripIndex].start_time_written" ng-if="stopIndex == 0" />
+                    <i class="glyphicon glyphicon-remove warning glyphicon-right" ng-if="trip.first" ng-click="removeStop(patternStop)"></i>
+                </td>
+            </tr>
+            <tr id="newRow">
+                <td>
+                    <input ng-model="newStop.name" typeahead="stop as stop.name for stop in getStopSearch($viewValue)"
+                           typeahead-loading="loadingLocations" typeahead-template-url="js/templates/autocomplete.html"
+                           typeahead-on-select="selectNewStop($item, $model, $label)"
+                           placeholder="Nieuwe halte" />
+                    <a ng-click="addStop()" class="btn btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i>&nbsp;Nieuwe halte</a>
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>

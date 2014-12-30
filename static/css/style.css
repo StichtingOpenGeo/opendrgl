@@ -1,0 +1,20 @@
+.container-overflow {
+    overflow-x: auto; max-width: none; width: auto; padding-left: 5%; padding-right: 5%;
+}
+.warning {
+    color: #b92c28;
+}
+.success {
+    color: #3e8f3e;
+}
+.glyphicon-right {
+    float: right;
+}
+.cell-time {
+    font-size: 90%;
+}
+.cell-time input {
+    width: 65px;
+}
+.map {
+}

@@ -7,7 +7,9 @@
 
     <link rel="stylesheet" href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
-
+    <link rel="stylesheet" href="/static/bower_components/openlayers3/build/ol.css">
+    <link rel="stylesheet" href="/static/bower_components/angular-openlayers-directive/dist/angular-openlayers-directive.css">
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
     <nav class="navbar navbar-default" role="navigation">
@@ -30,7 +32,7 @@
         </div><!-- /.container-fluid -->
     </nav>
 
-    <div class="container">
+    <div class="container container-overflow">
         <div ng-view></div>
     </div>
 
@@ -42,6 +44,8 @@
     <script src="/static/bower_components/angular-resource/angular-resource.js"></script>
     <script src="/static/bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
     <script src="/static/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script src="/static/bower_components/openlayers3/build/ol.js"></script>
+    <script src="/static/bower_components/angular-openlayers-directive/dist/angular-openlayers-directive.min.js"></script>
     <script src="/static/js/utils.js"></script>
     <script src="/static/js/resources.js"></script>
     <script src="/static/js/services.js"></script>

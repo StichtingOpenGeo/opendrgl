@@ -31,7 +31,6 @@ openDrglUtils.service('MathUtils', function() {
         return highest
     }
 
-
 });
 
 openDrglUtils.service('TimeUtils', function() {
@@ -79,6 +78,9 @@ openDrglUtils.service('TimeUtils', function() {
     }
 
     this.printTime = function(time) {
+        if (time == null) {
+            return "--:--:--";
+        }
         return this.padTime(time.getHours())+":"+this.padTime(time.getMinutes())+":"+this.padTime(time.getSeconds());
     }
 
@@ -96,6 +98,29 @@ openDrglUtils.service('TimeUtils', function() {
 
     this.parseDateToSeconds = function(date) {
         return date.getSeconds() + date.getMinutes() * 60 + date.getHours() * 60 * 60;
+    }
+
+});
+
+openDrglUtils.service('ArrayUtils', function() {
+
+    this.uniqueDicts = function(array, key) {
+        var a = array.concat();
+        for(var i=0; i<a.length; ++i) {
+            for(var j=i+1; j<a.length; ++j) {
+                if(a[i][key] === a[j][key])
+                    a.splice(j--, 1);
+            }
+        }
+
+        return a;
+    };
+
+    this.sortByKey = function(array, key) {
+        return array.sort(function(a, b) {
+            var x = a[key]; var y = b[key];
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        });
     }
 
 });

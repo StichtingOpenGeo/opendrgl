@@ -14,4 +14,4 @@ class ChbQuay(models.Model):
     city = models.CharField(max_length=100, blank=True, null=True)
     # TODO: Make this Geo field
     lat = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
-    lng = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
+    lon = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)

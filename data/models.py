@@ -18,7 +18,7 @@ class Stop(models.Model):
     city = models.CharField(max_length=25, blank=True, null=True)
     # TODO: Make this Geo field
     lat = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
-    lng = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
+    lon = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
 
     def __str__(self):
         return self.public_number;

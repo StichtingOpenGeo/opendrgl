@@ -30,7 +30,7 @@ class TripPatternTripView(BaseNgView):
 
 class StopView(NgCRUDView):
     model = Stop
-    fields = ['agency', 'name']
+    fields = ['agency', 'name', 'lat', 'lon']
 
 class LineView(NgCRUDView):
     model = Line
