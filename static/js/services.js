@@ -4,7 +4,7 @@
 
 var openDrglServices = angular.module('openDrglServices', ['openDrglResources']);
 
-openDrglServices.service('LineService', ['LineResource', function(LineResource) {
+openDrglServices.service('LineService', ['$http', 'LineDetailsResource', 'LineResource', function($http, LineDetailsResource, LineResource) {
 
     this.getLines = function() {
         return LineResource.query().$promise;
@@ -14,9 +14,9 @@ openDrglServices.service('LineService', ['LineResource', function(LineResource) 
         return LineResource.get({'pk' : line_id }).$promise;
     };
 
-    this.getTripPatterns = function(id, is_forward){
-        return LineResource.getPatterns({'line': id, 'is_forward': is_forward}).$promise;
-    };
+    this.getLineDetails = function(line_id) {
+        return LineDetailsResource.get({id: line_id}).$promise;
+    }
 
     this.createLine = function(args) {
         return new LineResource(args);
@@ -89,17 +89,17 @@ openDrglServices.service('TripService', ['TripResource', function(TripResource) 
 
 }]);
 
-openDrglServices.service('TripPatternService', ['TripPatternResource', function(TripPatternResource) {
-
-    this.getStops = function(pattern_id) {
-        return TripPatternResource.getStops({pattern: pattern_id}).$promise;
-    }
-
-    this.getTrips = function(pattern_id) {
-        return TripPatternResource.getTrips({pattern: pattern_id}).$promise;
-    }
-
-}]);
+//openDrglServices.service('TripPatternService', ['TripPatternResource', function(TripPatternResource) {
+//
+//    this.getStops = function(pattern_id) {
+//        return TripPatternResource.getStops({pattern: pattern_id}).$promise;
+//    }
+//
+//    this.getTrips = function(pattern_id) {
+//        return TripPatternResource.getTrips({pattern: pattern_id}).$promise;
+//    }
+//
+//}]);
 
 openDrglServices.service('TripPatternStopService', ['TripPatternStopResource', function(TripPatternStopResource) {
 

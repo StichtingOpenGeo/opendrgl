@@ -13,7 +13,7 @@ class Agency(models.Model):
 class Stop(models.Model):
     agency = models.ForeignKey(Agency)
     public_number = models.CharField(max_length=13)
-    planning_number = models.PositiveIntegerField(max_length=10)
+    planning_number = models.PositiveIntegerField()
     name = models.CharField(max_length=100)
     city = models.CharField(max_length=25, blank=True, null=True)
     # TODO: Make this Geo field
@@ -21,7 +21,7 @@ class Stop(models.Model):
     lon = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
 
     def __str__(self):
-        return self.public_number;
+        return "%s - %s" % (self.agency.name, self.public_number)
 
     class Meta:
         unique_together = (('agency', 'public_number'), ('agency', 'planning_number'))
@@ -76,7 +76,7 @@ class Line(models.Model):
 
 
 class TripPattern(models.Model):
-    line = models.ForeignKey(Line, related_name='trippatterns')
+    line = models.ForeignKey(Line, related_name='patterns')
     is_forward = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
@@ -87,7 +87,7 @@ class TripPattern(models.Model):
             trip.save()
 
 class TripPatternStop(models.Model):
-    pattern = models.ForeignKey(TripPattern)
+    pattern = models.ForeignKey(TripPattern, related_name='stops')
     order = models.PositiveSmallIntegerField()
     stop = models.ForeignKey(Stop)
     arrival_delta = models.PositiveIntegerField(blank=True, null=True)  # Seconds since first stop, 0 if order = 0
@@ -117,7 +117,7 @@ class CalenderExceptions(models.Model):
 
 
 class Trip(models.Model):
-    pattern = models.ForeignKey(TripPattern)
+    pattern = models.ForeignKey(TripPattern, related_name="trips")
     start_time = models.PositiveIntegerField()  # Seconds since midnight
     calendar = models.ForeignKey(Calendar, blank=True, null=True)  # Null = every day
 

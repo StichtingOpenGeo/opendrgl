@@ -5,8 +5,11 @@
 var openDrglResources = angular.module('openDrglResources', ['ngResource']);
 
 openDrglResources.factory('LineResource', ['$resource', function($resource) {
-    return $resource('/data/line/', {'pk': '@pk'},
-        {getPatterns : {method: "GET", url: '/data/line/patterns/', isArray: true}});
+    return $resource('/data/line/', {'pk': '@pk'}, {});
+}]);
+
+openDrglResources.factory('LineDetailsResource', ['$resource', function($resource) {
+    return $resource('/data/line_details/:id', {'id': '@id'}, {});
 }]);
 
 openDrglResources.factory('StopResource', ['$resource', function($resource) {
@@ -14,9 +17,7 @@ openDrglResources.factory('StopResource', ['$resource', function($resource) {
 }]);
 
 openDrglResources.factory('TripPatternResource', ['$resource', function($resource) {
-    return $resource('/data/trip_pattern/', {'pk': '@pk'},
-        {getStops : {method: "GET", url: '/data/trip_pattern/stops/', isArray: true},
-         getTrips : {method: "GET", url: '/data/trip_pattern/trips/', isArray: true}});
+    return $resource('/data/trip_pattern/', {'pk': '@pk'}, {});
 }]);
 
 openDrglResources.factory('TripPatternStopResource', ['$resource', function($resource) {
