@@ -50,6 +50,7 @@ openDrglApp.controller('LineEditCtrl', ['$scope', '$routeParams', 'LineService',
 openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService', 'TripPatternStopService',
         'TripService', 'StopService', 'StringUtils', 'MathUtils', 'TimeUtils', 'ArrayUtils',
     function ($scope, $http, $log, LineService, TripPatternStopService, TripService, StopService, StringUtils, MathUtils, TimeUtils, ArrayUtils) {
+    $scope.colors = ["#FF8A80", "#FF8A80", "#B388FF", "#8C9EFF", "#82B1FF"];
     $scope.lastTripId = 2;
     $scope.newStop = { name: ""}
     $scope.current_stops = [];
@@ -98,6 +99,51 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
         var tripIndex = $scope.trips.length - 1
         $scope.$watch('trips['+tripIndex+'].start_time_written', $scope.handleTripStartChangeListener(tripIndex));
     }
+
+    $scope.selectNewStop = function(item, model, label) {
+        $scope.newStop.name = model.name;
+        $scope.newStop.city = model.city;
+        $scope.newStop.public_number = model.public_code;
+        $scope.newStop.planning_number = StringUtils.splitChbId(model.public_code);
+        $scope.newStop.lat = model.lat;
+        $scope.newStop.lon = model.lon;
+        $scope.addStop()
+    }
+    $scope.addStop = function() {
+        var s = StopService.newStop({
+            agency: 2,
+            name: $scope.newStop.name
+        });
+        /* Check if this is a new custom stop or one from CHB */
+        if ($scope.newStop.public_number) {
+            s.public_number = $scope.newStop.public_number;
+            s.planning_number = $scope.newStop.planning_number;
+            s.lat = $scope.newStop.lat;
+            s.lon = $scope.newStop.lon;
+        }
+        StopService.saveStop(s)
+            .then($scope.initStop)
+            .then(function() {
+                $scope.newStop = {name: ""};
+            })
+            .catch($log.error);
+    };
+    $scope.initPatternStop = function(patternstop) {
+        var pattern = $scope.patterns[patternstop.pattern];
+        patternstop.departure_time = TimeUtils.printSeconds($scope.trips[pattern.trip_index].start_time + patternstop.departure_delta)
+        pattern.stops.push(patternstop);
+        $scope.current_stops = $scope.getStops();
+        $scope.recalculateCurrentPatternStops(); /* Recalculate current stops for each pattern */
+        var stopIndex = pattern.stops.length - 1
+        // TODO: this is the second place this gets done
+        $scope.$watch('patterns[' + pattern.id + '].stops[' + stopIndex + '].departure_time', $scope.handleTripTimeChangeListener(pattern, stopIndex));
+    }
+    $scope.initStop = function(stop) {
+        stop.id = stop.pk;
+        $scope.stops[stop.id] = stop; /* Add to local other cache? TODO: FIX */
+        StopService.addStopToCache(stop);
+        $scope.calculateTripPattern(stop);
+    }
     $scope.calculateTripPattern = function(stop) {
         angular.forEach($scope.patterns, function (pattern, pk) {
             var lastStop = pattern.stops[pattern.stops.length - 1];
@@ -119,41 +165,6 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
 
         });
     };
-    $scope.initPatternStop = function(patternstop) {
-        var pattern = $scope.patterns[patternstop.pattern];
-        patternstop.departure_time = TimeUtils.printSeconds($scope.trips[pattern.trip_index].start_time + patternstop.departure_delta)
-        pattern.stops.push(patternstop);
-        $scope.current_stops = $scope.getStops();
-        $scope.recalculateCurrentPatternStops(); /* Recalculate current stops for each pattern */
-        var stopIndex = pattern.stops.length - 1
-        // TODO: this is the second place this gets done
-        $scope.$watch('patterns[' + pattern.id + '].stops[' + stopIndex + '].departure_time', $scope.handleTripTimeChangeListener(pattern, stopIndex));
-    }
-    $scope.addStop = function() {
-        var s = StopService.newStop({
-            agency: 2, //$scope.$parent.$parent.line.agency,
-            name: $scope.newStop.name
-        });
-        /* Check if this is a new custom stop or one from CHB */
-        if ($scope.newStop.public_number) {
-            s.public_number = $scope.newStop.public_number;
-            s.planning_number = $scope.newStop.planning_number;
-            s.lat = $scope.newStop.lat;
-            s.lon = $scope.newStop.lon;
-        }
-        StopService.saveStop(s)
-            .then($scope.initStop)
-            .then(function() {
-                $scope.newStop = {name: ""};
-            })
-            .catch($log.error);
-    };
-    $scope.initStop = function(stop) {
-        stop.id = stop.pk;
-        $scope.stops[stop.id] = stop; /* Add to local other cache? TODO: FIX */
-        StopService.addStopToCache(stop);
-        $scope.calculateTripPattern(stop);
-    }
     $scope.getStopSearch = function(val) {
         return $http.get('/data/chb?name='+val, {}).then(function(response){
             return response.data.map(function(stop) {
@@ -164,15 +175,6 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
     };
     $scope.getStopDetails = function(stop_id) {
         return $scope.stops[stop_id];
-    }
-    $scope.selectNewStop = function(item, model, label) {
-        $scope.newStop.name = model.name;
-        $scope.newStop.city = model.city;
-        $scope.newStop.public_number = model.public_code;
-        $scope.newStop.planning_number = StringUtils.splitChbId(model.public_code);
-        $scope.newStop.lat = model.lat;
-        $scope.newStop.lon = model.lon;
-        $scope.addStop()
     }
 
     $scope.cloneStops = function(pattern, start_time) {
@@ -302,6 +304,7 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
                 }
 
                 pattern.stops = ArrayUtils.sortByKey(pattern.stops, 'order');
+                pattern.color = $scope.colors[patternIndex];
                 $scope.patterns[pattern.id] = pattern;
 
                 angular.forEach(pattern.stops, function (stop, stopIndex) {
@@ -309,8 +312,10 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
                 });
 
                 var first = true;
+                pattern.trips.sort(function(a, b) { return a.start_time - b.start_time; });
                 angular.forEach(pattern.trips, function (trip) {
                     trip.pattern = pattern.id;
+                    trip.color = pattern.color;
                     trip.first = first;
                     trip.start_time_written = TimeUtils.printSeconds(trip.start_time);
                     $scope.trips.push(trip);
@@ -327,6 +332,7 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
                     }
                 });
             });
+            $scope.trips.sort(function(a, b) { return a.start_time - b.start_time; });
             $scope.current_stops = $scope.getStops();
             angular.forEach($scope.trips, function (trip, index) {
                 trip.stops = $scope.cloneStops(trip.pattern, trip.start_time);
