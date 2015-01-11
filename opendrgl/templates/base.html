@@ -33,7 +33,9 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                         {{ user.first_name }} {{ user.last_name }} <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#"><strong>Project: </strong>blah</a></li>
+                        {% if user.profile and user.profile.default_agency %}
+                            <li><a href="#"><strong>Vervoerder: </strong>{{ user.profile.default_agency.name }}</a></li>
+                        {% endif %}
                         <li><a href="{% url 'app_logout' %}">Logout</a></li>
                     </ul>
                 </li>

@@ -1,18 +1,15 @@
 <h2>Lijnen</h2>
 <table class="table table-bordered table-striped">
     <tr>
-        <th>Lijnnummer</th>
-        <th>Bestemming</th>
+        <th class="col-lg-10 col-md-10">Lijnnummer</th>
         <th>&nbsp;</th>
     </tr>
     <tr ng-repeat="line in lines">
         <td>{{ line.public_number }}</td>
-        <td></td>
         <td><a href="#line/{{ line.pk }}" class="btn btn-primary btn-xs">Bewerk</a></td>
     </tr>
     <tr>
         <td><input ng-model="newLine.number"></td>
-        <td><input ng-model="newLine.destination"></td>
         <td><a href="" ng-click="addLine()" class="btn btn-success btn-xs">Toevoegen</a></td>
     </tr>
 </table>

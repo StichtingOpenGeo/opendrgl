@@ -1,6 +1,6 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Max
-
 
 class Agency(models.Model):
     datacode = models.CharField(max_length=5, unique=True)
@@ -8,6 +8,11 @@ class Agency(models.Model):
 
     def __str__(self):
         return self.datacode;
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, related_name='profile')
+    default_agency = models.ForeignKey(Agency, null=True)
 
 
 class Stop(models.Model):
