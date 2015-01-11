@@ -10,7 +10,8 @@
                 <th class="data-halte">Halte</th>
                 <th ng-repeat="trip in trips" ng-style="{ 'background-color': trip.color }">
                      #{{ trip.id }}&nbsp;
-                    <i class="glyphicon glyphicon-remove warning glyphicon-right" ng-if="trips.length > 1" ng-click="removeTrip(trip)"></i>
+                    <i class="glyphicon glyphicon-retweet success glyphicon-right" ng-if="trip.first" ng-click="clonePattern(trip.pattern)" style="padding-left: 5px;"></i>
+                    <i class="glyphicon glyphicon-remove warning glyphicon-right" ng-if="trips.length > 1" ng-click="removeTrip(trip)" style="padding-left: 5px;"></i>
                 </th>
                 <th><a ng-click="addTrip(false)" ng-if="trips.length" class="btn btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i>&nbsp;Nieuwe rit</a></th>
             </tr>
@@ -19,7 +20,7 @@
                     <i class="glyphicon glyphicon-map-marker" ng-if="getStopDetails(patternStop.stop).lat > 0"></i>
                     <span ng-bind="getStopDetails(patternStop.stop).name" />
                 </th>
-                <td ng-repeat="(tripIndex, trip) in trips" class="cell-time" ng-class="{info: trip.first}" ng-style="{ 'opacity' : 0.7, 'background-color': trip.first || stopIndex == 0 ? trip.color : '#fff'}">
+                <td ng-repeat="(tripIndex, trip) in trips" class="cell-time" ng-class="{info: trip.first}" ng-style="{ 'background-color': trip.first || stopIndex == 0 ? trip.color : '#fff'}">
                     <span ng-if="!trip.first && stopIndex > 0">{{ trip.stops[stopIndex].time }}</span>
                     <input ng-model="trips[tripIndex].start_time_written" ng-if="stopIndex == 0" />
                     <span ng-if="trip.first && getPatternCell(trip.pattern, stopIndex)">
@@ -34,8 +35,8 @@
             <tr id="newRow">
                 <td>
                     <input ng-model="newStop.name" typeahead="stop as stop.name for stop in getStopSearch($viewValue)"
-                           typeahead-loading="loadingLocations" typeahead-template-url="js/templates/autocomplete.html"
-                           typeahead-on-select="selectNewStop($item, $model, $label)"
+                           typeahead-loading="loadingLocations" typeahead-template-url="/static/js/templates/autocomplete.html"
+                           typeahead-on-select="selectNewStop($item, $model, $label)" typeahead-append-to-body="true"
                            placeholder="Nieuwe halte" />
                     <a ng-click="addStop()" class="btn btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i>&nbsp;Nieuwe halte</a>
                 </td>

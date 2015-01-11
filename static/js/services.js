@@ -69,6 +69,14 @@ openDrglServices.service('StopService', ['$q', 'StopResource', function($q, Stop
 
 }]);
 
+openDrglServices.service('TripPatternService', ['PatternDetailsResource', function(PatternDetailsResource) {
+
+    this.cloneTripPattern = function(pattern) {
+        return PatternDetailsResource.clone({pk: pattern}).$promise;
+    }
+
+}]);
+
 openDrglServices.service('TripService', ['TripResource', function(TripResource) {
 
     this.getTrip = function(id) {

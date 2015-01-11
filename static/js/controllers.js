@@ -22,7 +22,6 @@ openDrglApp.directive('scheduleTable', function() {
 
 openDrglApp.controller('LineOverviewCtrl', ['$scope', 'LineService', function($scope, LineService) {
     $scope.lines = [];
-    $scope.agency = 2; 
     $scope.newLine = {};
     this.loadLines = function() {
         LineService.getLines().then(function(lines) {
@@ -30,7 +29,7 @@ openDrglApp.controller('LineOverviewCtrl', ['$scope', 'LineService', function($s
         });
     };
     $scope.addLine = function() {
-        var line = LineService.createLine({ public_number: $scope.newLine.number, planning_number: $scope.newLine.number, agency: $scope.agency });
+        var line = LineService.createLine({ public_number: $scope.newLine.number, planning_number: $scope.newLine.number });
         LineService.saveLine(line).then(function(line) {
             $scope.newLine = {};
             $scope.lines.push(line);
@@ -47,9 +46,9 @@ openDrglApp.controller('LineEditCtrl', ['$scope', '$routeParams', 'LineService',
     })
 }]);
 
-openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService', 'TripPatternStopService',
+openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService', 'TripPatternStopService', 'TripPatternService',
         'TripService', 'StopService', 'StringUtils', 'MathUtils', 'TimeUtils', 'ArrayUtils',
-    function ($scope, $http, $log, LineService, TripPatternStopService, TripService, StopService, StringUtils, MathUtils, TimeUtils, ArrayUtils) {
+    function ($scope, $http, $log, LineService, TripPatternStopService, TripPatternService, TripService, StopService, StringUtils, MathUtils, TimeUtils, ArrayUtils) {
     $scope.colors = ["#FF8A80", "#FF8A80", "#B388FF", "#8C9EFF", "#82B1FF"];
     $scope.lastTripId = 2;
     $scope.newStop = { name: ""}
@@ -82,6 +81,22 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
     $scope.getPatternCell = function(patternIndex, stopIndex) {
         return $scope.patterns[patternIndex].current_stops[stopIndex].departure_time;
     }
+    $scope.getStopDetails = function(stop_id) {
+        return $scope.stops[stop_id];
+    }
+    $scope.getStopSearch = function(val) {
+        return $http.get('/data/chb?name='+val, {}).then(function(response){
+            return response.data.map(function(stop) {
+                stop['label'] = stop.city+", "+stop.name
+                return stop
+            });
+        });
+    };
+    $scope.clonePattern = function(patternIndex) {
+        TripPatternService.cloneTripPattern($scope.patterns[patternIndex].id).then(function(result) {
+            console.log(result);
+        })
+    };
     $scope.addTrip = function() {
         $scope.lastTripId += 1;
         var defaultPattern = $scope.patterns[Object.keys($scope.patterns)[0]].id;
@@ -93,6 +108,8 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
         newTrip.stops = $scope.cloneStops(newTrip.pattern, newTrip.start_time);
         // TODO: determine first properly
         newTrip.first = false;
+        newTrip.color = $scope.patterns[newTrip.pattern].color;
+        newTrip.id = newTrip.pk;
         newTrip.start_time_written = TimeUtils.printSeconds(newTrip.start_time)
         $scope.trips.push(newTrip);
         // TODO: this is the second place this gets done
@@ -111,7 +128,6 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
     }
     $scope.addStop = function() {
         var s = StopService.newStop({
-            agency: 2,
             name: $scope.newStop.name
         });
         /* Check if this is a new custom stop or one from CHB */
@@ -165,17 +181,6 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
 
         });
     };
-    $scope.getStopSearch = function(val) {
-        return $http.get('/data/chb?name='+val, {}).then(function(response){
-            return response.data.map(function(stop) {
-                stop['label'] = stop.city+", "+stop.name
-                return stop
-            });
-        });
-    };
-    $scope.getStopDetails = function(stop_id) {
-        return $scope.stops[stop_id];
-    }
 
     $scope.cloneStops = function(pattern, start_time) {
         if (!$scope.patterns[pattern] || $scope.patterns[pattern].stops.length == 0) {
