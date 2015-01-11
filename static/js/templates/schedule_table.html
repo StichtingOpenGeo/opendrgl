@@ -20,8 +20,8 @@
                     <span ng-if="!trip.first && stopIndex > 0">{{ trip.stops[stopIndex].time }}</span>
                     <input ng-model="trips[tripIndex].start_time_written" ng-if="stopIndex == 0" />
                     <span ng-if="trip.first && getPatternCell(trip.pattern, stopIndex)">
-                        <input ng-model="getPatternCell(trip.pattern, stopIndex)" ng-if="stopIndex != 0" />
-                        <i class="glyphicon glyphicon-remove warning glyphicon-right" ng-click="removeStop(patternStop)"></i>
+                        <input ng-model="patterns[trip.pattern].current_stops[stopIndex].departure_time" ng-if="stopIndex != 0" />
+                        <i class="glyphicon glyphicon-remove warning glyphicon-right" ng-click="removeStopFromPattern(trip.pattern, stopIndex)"></i>
                     </span>
                     <!--<span ng-if="trip.first && !getPatternCell(trip.pattern, stopIndex)">
                         <i class="glyphicon glyphicon-plus success glyphicon-right" ng-click="addStopToPattern(trip.pattern, patternStop)"></i>

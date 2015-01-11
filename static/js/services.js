@@ -89,18 +89,6 @@ openDrglServices.service('TripService', ['TripResource', function(TripResource) 
 
 }]);
 
-//openDrglServices.service('TripPatternService', ['TripPatternResource', function(TripPatternResource) {
-//
-//    this.getStops = function(pattern_id) {
-//        return TripPatternResource.getStops({pattern: pattern_id}).$promise;
-//    }
-//
-//    this.getTrips = function(pattern_id) {
-//        return TripPatternResource.getTrips({pattern: pattern_id}).$promise;
-//    }
-//
-//}]);
-
 openDrglServices.service('TripPatternStopService', ['TripPatternStopResource', function(TripPatternStopResource) {
 
 
@@ -113,7 +101,7 @@ openDrglServices.service('TripPatternStopService', ['TripPatternStopResource', f
     }
 
     this.deleteTripPatternStop = function(tps_id) {
-        return TripPatternResource.delete({pk: tps_id}).$promise;
+        return TripPatternStopResource.delete({pk: tps_id}).$promise;
     }
 
     this.getTripPatternStop = function(tps_id) {

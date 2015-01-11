@@ -79,7 +79,7 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
         return $scope.patterns[trip.pattern].stops[index].time;
     }
     $scope.getPatternCell = function(patternIndex, stopIndex) {
-        return $scope.patterns[patternIndex].current_stops[stopIndex].departure_time
+        return $scope.patterns[patternIndex].current_stops[stopIndex].departure_time;
     }
     $scope.addTrip = function() {
         $scope.lastTripId += 1;
@@ -103,7 +103,8 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
             var lastStop = pattern.stops[pattern.stops.length - 1];
             var departure_delta = (lastStop) ? lastStop.departure_delta : 0;
             var tps = TripPatternStopService.newTripPatternStop({
-                pattern: pattern.id, stop: stop.id,
+                pattern: pattern.id,
+                stop: stop.id,
                 order: MathUtils.getMaxOrder(pattern.stops) + 1,
                 arrival_delta: departure_delta,
                 departure_delta: departure_delta
@@ -132,6 +133,7 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
             agency: 2, //$scope.$parent.$parent.line.agency,
             name: $scope.newStop.name
         });
+        /* Check if this is a new custom stop or one from CHB */
         if ($scope.newStop.public_number) {
             s.public_number = $scope.newStop.public_number;
             s.planning_number = $scope.newStop.planning_number;
@@ -146,6 +148,7 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
             .catch($log.error);
     };
     $scope.initStop = function(stop) {
+        stop.id = stop.pk;
         StopService.addStopToCache(stop);
         $scope.calculateTripPattern(stop);
     }
@@ -196,17 +199,23 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
                 };
                 pattern_index = pattern_index + 1;
             }
-
             stops.push(new_stop);
         });
         return stops
     }
-    $scope.removeStop = function(patternStop) {
-        TripPatternStopService.deleteTripPatternStop(patternStop.id)
-            .then(function(deletedPattern) {
-                var i = $scope.patterns[deletedPattern.pattern].stops.indexOf(patternStop);
-                $scope.patterns[deletedPattern.pattern].stops.splice(i, 1);
+    $scope.removeStopFromPattern = function(pattern, stopIndex) {
+        var tps = $scope.patterns[pattern].current_stops[stopIndex];
+        TripPatternStopService.deleteTripPatternStop(tps.id)
+            .then(function(deletedStop) {
+                var pattern = $scope.patterns[deletedStop.pattern];
+                var i = pattern.stops.indexOf(tps);
+                pattern.stops.splice(i, 1);
                 $scope.current_stops = $scope.getStops();
+                // TODO: only do this for trips in this pattern
+                angular.forEach($scope.trips, function(trip, index) {
+                    trip.stops = $scope.cloneStops(trip.pattern, trip.start_time);
+                });
+                pattern.current_stops = $scope.getCurrentStopPattern(pattern.id);
             });
     }
     $scope.removeTrip = function(trip) {
@@ -221,12 +230,13 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
                 if (trip.first) {
                     /* Find the new first pattern */
                     $scope.trips[0].first = true;
+                    // TODO: This won't work for multiple patterns :(
                     /* Recalculate our departure_times */
                     angular.forEach($scope.patterns[$scope.trips[0].pattern].stops, function (stop) {
                         stop.departure_time = TimeUtils.printSeconds($scope.trips[0].start_time + stop.departure_delta);
                     });
-            }
-        });
+                }
+            });
     }
     $scope.handleTripStartChangeListener = function(tripIndex) {
         return function(newVal, oldVal, scope) {
