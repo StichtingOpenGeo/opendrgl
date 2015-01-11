@@ -124,6 +124,7 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
         patternstop.departure_time = TimeUtils.printSeconds($scope.trips[pattern.trip_index].start_time + patternstop.departure_delta)
         pattern.stops.push(patternstop);
         $scope.current_stops = $scope.getStops();
+        $scope.recalculateCurrentPatternStops(); /* Recalculate current stops for each pattern */
         var stopIndex = pattern.stops.length - 1
         // TODO: this is the second place this gets done
         $scope.$watch('patterns[' + pattern.id + '].stops[' + stopIndex + '].departure_time', $scope.handleTripTimeChangeListener(pattern, stopIndex));
@@ -149,6 +150,7 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
     };
     $scope.initStop = function(stop) {
         stop.id = stop.pk;
+        $scope.stops[stop.id] = stop; /* Add to local other cache? TODO: FIX */
         StopService.addStopToCache(stop);
         $scope.calculateTripPattern(stop);
     }
@@ -329,11 +331,14 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
             angular.forEach($scope.trips, function (trip, index) {
                 trip.stops = $scope.cloneStops(trip.pattern, trip.start_time);
             });
-            angular.forEach($scope.patterns, function(pattern, index) {
-                $scope.patterns[pattern.id].current_stops = $scope.getCurrentStopPattern(pattern.id);
-            });
+            $scope.recalculateCurrentPatternStops();
         }).catch($log.error);
     };
+    $scope.recalculateCurrentPatternStops = function() {
+        angular.forEach($scope.patterns, function(pattern, index) {
+            $scope.patterns[pattern.id].current_stops = $scope.getCurrentStopPattern(pattern.id);
+        });
+    }
     $scope.init = function() {
         StopService.getAllStops()
             .then(function(stops) {
