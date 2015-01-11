@@ -53,5 +53,5 @@ class LineViewSet(viewsets.ReadOnlyModelViewSet):
         return super(LineViewSet, self).get_queryset()
 
 
-router = routers.DefaultRouter()
+router = routers.SimpleRouter()
 router.register(r'data/line_details', LineViewSet)

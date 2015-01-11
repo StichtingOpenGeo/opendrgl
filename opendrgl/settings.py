@@ -22,7 +22,7 @@ SECRET_KEY = '7^f$oh7xxh0e3&0jc*t$&0j92+f*ys-z^kszbvuws+z6xgfbz1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = []
 
@@ -44,7 +44,8 @@ INSTALLED_APPS = (
 
     # Third-party libs
     'djangular',
-    'rest_framework'
+    'rest_framework',
+    'floppyforms'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -79,7 +80,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Amsterdam'
 
 USE_I18N = True
 
@@ -87,6 +88,11 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Users
+
+LOGIN_URL = 'app_login'
+LOGOUT_URL = 'app_logout'
+LOGIN_REDIRECT_URL = 'index'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
@@ -97,6 +103,8 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
     os.path.join(BASE_DIR, "static/bower_components"),
 )
+
+TEMPLATE_DIRS = (os.path.join(BASE_DIR, "opendrgl/templates"),)
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,

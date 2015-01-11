@@ -1,5 +1,8 @@
 <div class="line" ng-controller="LineEditCtrl as line">
-    <h2><span class="col-lg-1">Lijn</span><input name="linenumber" ng-model="line.public_number" class="form-inline col-lg-1"><span class="col-lg-1">naar</span><input name="destination"/></h2>
+    <h2><span style="float: left;">Lijn&nbsp;</span><input name="linenumber" ng-model="line.public_number" class="form-inline col-lg-1">
+        <!--<span class="col-lg-1">naar</span><input name="destination"/>-->
+    </h2>
+    <div class="clearfix"></div>
     <h3>Heen</h3>
     <schedule-table line-direction-forward="true"></schedule-table>
 

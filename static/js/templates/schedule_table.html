@@ -19,7 +19,7 @@
                     <i class="glyphicon glyphicon-map-marker" ng-if="getStopDetails(patternStop.stop).lat > 0"></i>
                     <span ng-bind="getStopDetails(patternStop.stop).name" />
                 </th>
-                <td ng-repeat="(tripIndex, trip) in trips" class="cell-time" ng-class="{info: trip.first}" ng-style="{ 'background-color': trip.first || stopIndex == 0 ? trip.color : '#fff'}">
+                <td ng-repeat="(tripIndex, trip) in trips" class="cell-time" ng-class="{info: trip.first}" ng-style="{ 'opacity' : 0.7, 'background-color': trip.first || stopIndex == 0 ? trip.color : '#fff'}">
                     <span ng-if="!trip.first && stopIndex > 0">{{ trip.stops[stopIndex].time }}</span>
                     <input ng-model="trips[tripIndex].start_time_written" ng-if="stopIndex == 0" />
                     <span ng-if="trip.first && getPatternCell(trip.pattern, stopIndex)">

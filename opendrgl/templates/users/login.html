@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load floppyforms i18n %}
+
+{% block content %}
+<div class="col-lg-8">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">{% trans "Inloggen" %}</h3>
+        </div>
+        <div class="panel-body">
+            <p>{% trans "Voor deze applicatie is een account nodig. Neem contact op met een beheerder voor meer informatie." %}</p>
+            {% if form.errors and not form.non_field_errors %}
+                <p class="alert alert-warning">
+                    {% trans "Je gebruikersnaam of wachtwoord kwamen niet overeen. Probeer het nog eens." %}
+                </p>
+            {% endif %}
+            <form method="post" class="form-horizontal" action="{% url 'django.contrib.auth.views.login' %}">
+                {% csrf_token %}
+                {% form form %}
+                <div class="form-group">
+                    <div class="col-lg-offset-2 col-lg-10">
+                        <button type="submit" class="btn btn-primary">{% trans "Inloggen" %}</button>
+                    </div>
+                </div>
+                <input type="hidden" name="next" value="{{ next }}" />
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

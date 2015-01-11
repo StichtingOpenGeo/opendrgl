@@ -2,7 +2,8 @@ Django>=1.7,<=1.7.99
 psycopg2
 django-angular
 django-websocket-redis
-django-preserialize
 gdal
 djangorestframework
 drf-extensions
+django-braces # Auth mixins
+django-floppyforms # Password forms

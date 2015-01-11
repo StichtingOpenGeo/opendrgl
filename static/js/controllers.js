@@ -1,7 +1,7 @@
 /**
  * Created by Joel Haasnoot on 23/08/14.
  */
-
+var template_dir = '/static/js/templates/'
 var openDrglApp = angular.module('openDrglApp', ['ngCookies', 'ngRoute', 'openDrglUtils', 'openDrglServices', 'ui.bootstrap', 'openlayers-directive']);
 
 openDrglApp.run(function($http, $cookies) {
@@ -13,7 +13,7 @@ openDrglApp.run(function($http, $cookies) {
 openDrglApp.directive('scheduleTable', function() {
     return {
         restrict: 'E',
-        templateUrl: 'js/templates/schedule_table.html',
+        templateUrl: template_dir+'schedule_table.html',
         scope: {
             lineDirectionForward: "="
         }
@@ -297,7 +297,6 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
     };
     $scope.getPatterns = function() {
         LineService.getLineDetails($scope.$parent.$parent.line_id).then(function(details) {
-            $log.info(details);
             angular.forEach(details.patterns, function (pattern, patternIndex) {
                 if (pattern.is_forward != $scope.$parent.lineDirectionForward) {
                     return;
@@ -391,11 +390,11 @@ openDrglApp.config(['$routeProvider', '$resourceProvider', function($routeProvid
 
     $routeProvider
         .when('/line/:line', {
-            templateUrl: 'js/templates/line_edit.html',
+            templateUrl: template_dir+'line_edit.html',
             controller: 'LineEditCtrl'
         })
         .when('/', {
-            templateUrl: 'js/templates/line_overview.html',
+            templateUrl: template_dir+'line_overview.html',
             controller: 'LineOverviewCtrl'
         });
 }]);
