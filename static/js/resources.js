@@ -21,7 +21,8 @@ openDrglResources.factory('TripPatternResource', ['$resource', function($resourc
 }]);
 
 openDrglResources.factory('PatternDetailsResource', ['$resource', function($resource) {
-    return $resource('/data/trip_patterns/:id', {'id': '@pk'}, {'clone' : {method: 'POST', url: '/data/trip_patterns/:id/clone/'}});
+    return $resource('/data/trip_patterns/:id', {'id': '@pk'},
+                {'clone' : {method: 'POST', url: '/data/trip_patterns/:id/clone/'}});
 }]);
 
 openDrglResources.factory('TripPatternStopResource', ['$resource', function($resource) {

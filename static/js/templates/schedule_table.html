@@ -10,8 +10,8 @@
                 <th class="data-halte">Halte</th>
                 <th ng-repeat="trip in trips" ng-style="{ 'background-color': trip.color }">
                      #{{ trip.id }}&nbsp;
-                    <i class="glyphicon glyphicon-retweet success glyphicon-right" ng-if="trip.first" ng-click="clonePattern(trip.pattern)" style="padding-left: 5px;"></i>
-                    <i class="glyphicon glyphicon-remove warning glyphicon-right" ng-if="trips.length > 1" ng-click="removeTrip(trip)" style="padding-left: 5px;"></i>
+                    <i class="glyphicon glyphicon-retweet success glyphicon-right" title="Clone" ng-if="trip.first" ng-click="clonePattern(trip.pattern)" style="padding-left: 5px;"></i>
+                    <i class="glyphicon glyphicon-remove warning glyphicon-right" title="Verwijder" ng-if="trips.length > 1" ng-click="removeTrip(trip)" style="padding-left: 5px;"></i>
                 </th>
                 <th><a ng-click="addTrip(false)" ng-if="trips.length" class="btn btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i>&nbsp;Nieuwe rit</a></th>
             </tr>
@@ -25,11 +25,11 @@
                     <input ng-model="trips[tripIndex].start_time_written" ng-if="stopIndex == 0" />
                     <span ng-if="trip.first && getPatternCell(trip.pattern, stopIndex)">
                         <input ng-model="patterns[trip.pattern].current_stops[stopIndex].departure_time" ng-if="stopIndex != 0" />
-                        <i class="glyphicon glyphicon-remove warning glyphicon-right" ng-click="removeStopFromPattern(trip.pattern, stopIndex)"></i>
+                        <i class="glyphicon glyphicon-remove warning glyphicon-right" title="Verwijder" ng-click="removeStopFromPattern(trip.pattern, stopIndex)"></i>
                     </span>
-                    <!--<span ng-if="trip.first && !getPatternCell(trip.pattern, stopIndex)">
-                        <i class="glyphicon glyphicon-plus success glyphicon-right" ng-click="addStopToPattern(trip.pattern, patternStop)"></i>
-                    </span>-->
+                    <span ng-if="trip.first && !getPatternCell(trip.pattern, stopIndex)">
+                        <i class="glyphicon glyphicon-plus success glyphicon-right" title="Toevoegen" ng-click="addStopToPattern(trip.pattern, stopIndex)"></i>
+                    </span>
                 </td>
             </tr>
             <tr id="newRow">
