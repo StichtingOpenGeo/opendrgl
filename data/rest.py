@@ -70,26 +70,23 @@ class TripPatternViewSet(viewsets.ModelViewSet):
         return None
 
     def get_queryset(self):
+        # This is our authentication
         return super(TripPatternViewSet, self).get_queryset().filter(line__agency=self.get_user_agency())
 
     @detail_route(methods=['POST'])
     def clone(self, request, pk=None):
+        response = self.get_object().clone()
+
+        serialize = TripPatternSerializer(response)
+        return Response(serialize.data)
+
+    @detail_route(methods=['POST'])
+    def insert_stop(self, request, pk=None):
         pattern = self.get_object()
 
-        p = TripPattern()
-        p.line = pattern.line
-        p.is_forward = pattern.is_forward
-        p.save()
-        for stop in pattern.stops.all():
-            tps = TripPatternStop()
-            tps.pattern = p
-            tps.order = stop.order
-            tps.stop = stop.stop
-            tps.arrival_delta = stop.arrival_delta
-            tps.departure_delta = stop.departure_delta
-            tps.save()
-
-        serialize = TripPatternSerializer(p)
+        # TODO: returning a single pattern stop, but we've changed more than just taht
+        response = pattern.insert_stop(request.data['stop'], request.data['pre'], request.data['post'])
+        serialize = TripPatternStopSerializer(response)
         return Response(serialize.data)
 
 

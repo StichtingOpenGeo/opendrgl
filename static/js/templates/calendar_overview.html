@@ -1,0 +1,16 @@
+<h2>Kalenders</h2>
+<table class="table table-bordered table-striped">
+    <tr>
+        <th class="col-lg-8 col-md-8">Naam</th>
+        <th>Geldigheid</th>
+        <th>&nbsp;</th>
+    </tr>
+    <tr ng-repeat="calendar in calendars">
+        <td>{{ calendar.label }}</td>
+        <td><a href="#calendar/{{ calendar.pk }}" class="btn btn-primary btn-xs">Bewerk</a></td>
+    </tr>
+    <tr>
+        <td><input ng-model="newCalendar.label"></td>
+        <td><a href="" ng-click="addCalendar()" class="btn btn-success btn-xs">Toevoegen</a></td>
+    </tr>
+</table>

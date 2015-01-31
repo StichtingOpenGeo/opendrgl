@@ -123,4 +123,19 @@ openDrglUtils.service('ArrayUtils', function() {
         });
     }
 
+    this.findFirstStop = function(array, pos, earlier) {
+        var subset;
+        if (earlier) {
+            subset = array.slice(0, pos).reverse();
+        } else {
+            subset = array.slice(pos);
+        }
+        for (var key in subset) {
+            if ('id' in subset[key]) { // Filter blank objects vs real stops
+                return subset[key]
+            }
+        }
+    };
+
+
 });

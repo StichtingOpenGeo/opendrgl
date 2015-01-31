@@ -75,6 +75,10 @@ openDrglServices.service('TripPatternService', ['PatternDetailsResource', functi
         return PatternDetailsResource.clone({pk: pattern}).$promise;
     }
 
+    this.insertStopIntoTripPattern = function(pattern, stop, pre, post)  {
+        return PatternDetailsResource.insert_stop({pk: pattern, stop: stop, pre: pre, post: post}).$promise;
+    }
+
 }]);
 
 openDrglServices.service('TripService', ['TripResource', function(TripResource) {

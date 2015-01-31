@@ -91,6 +91,48 @@ class TripPattern(models.Model):
             trip = Trip(pattern=self, start_time=6*60*60)
             trip.save()
 
+    def clone(self):
+        p = TripPattern()
+        p.line = self.line
+        p.is_forward = self.is_forward
+        p.save()
+        for stop in self.stops.all():
+            tps = TripPatternStop()
+            tps.pattern = p
+            tps.order = stop.order
+            tps.stop = stop.stop
+            tps.arrival_delta = stop.arrival_delta
+            tps.departure_delta = stop.departure_delta
+            tps.save()
+        return p
+
+    def insert_stop(self, stop_id, pre, post):
+        # Insert a stop in a pattern
+        # Walk through all the stops, from top to bottom, incrementing each order by one, up to and including the stop
+        # after the position we want to insert
+        post_stop_found = False
+        pre_stop = None
+        for stop in self.stops.all().order_by('-order'):
+            if stop.pk == pre:
+                pre_stop = stop
+            elif stop.pk == post:
+                post_stop_found = True
+                stop.order += 1
+                stop.save()
+            elif post_stop_found is False and pre_stop is None:
+                stop.order += 1
+                stop.save()
+        if pre_stop:
+            tps = TripPatternStop()
+            tps.pattern = self
+            tps.stop_id = stop_id
+            tps.order = pre_stop.order + 1
+            tps.arrival_delta = pre_stop.arrival_delta
+            tps.departure_delta = pre_stop.departure_delta
+            tps.save()
+            return tps
+        return None
+
 class TripPatternStop(models.Model):
     pattern = models.ForeignKey(TripPattern, related_name='stops')
     order = models.PositiveSmallIntegerField()

@@ -215,8 +215,16 @@ openDrglApp.controller('ScheduleCtrl', ['$scope', '$http', '$log', 'LineService'
     }
     $scope.addStopToPattern = function(pattern, stopIndex) {
         console.log("Adding stop "+stopIndex+" to pattern "+pattern);
-        var tps = $scope.patterns[pattern].current_stops[stopIndex];
-        console.log(tps);
+        console.log($scope.patterns[pattern].current_stops);
+        console.log($scope.patterns[pattern].stops);
+        var stopId = $scope.current_stops[stopIndex].stop;
+        var pre = ArrayUtils.findFirstStop($scope.patterns[pattern].current_stops, stopIndex, true);
+        var post = ArrayUtils.findFirstStop($scope.patterns[pattern].current_stops, stopIndex, false);
+        TripPatternService.insertStopIntoTripPattern(pattern, stopId, pre.id, post.id)
+        //var newTps = TripPatternStopService.newTripPatternStop({stop : stopId, });
+        //TripPatternStopService.saveTripPatternStop(newTps).then(function(tps) {
+        //    console.log(tps);
+        //});
     }
     $scope.removeStopFromPattern = function(pattern, stopIndex) {
         var tps = $scope.patterns[pattern].current_stops[stopIndex];
@@ -397,7 +405,11 @@ openDrglApp.controller('MapController', ['$scope', function($scope) {
     };
     $scope.getMarkerStops();
     $scope.$watch('$parent.current_stops', $scope.getMarkerStops);
-}])
+}]);
+
+openDrglApp.controller('MapController', ['$scope', function($scope) {
+    $scope.calendars = [];
+}]);
 
 openDrglApp.config(['$routeProvider', '$resourceProvider', function($routeProvider, $resourceProvider) {
 
@@ -408,8 +420,12 @@ openDrglApp.config(['$routeProvider', '$resourceProvider', function($routeProvid
             templateUrl: template_dir+'line_edit.html',
             controller: 'LineEditCtrl'
         })
-        .when('/', {
+        .when('/line', {
             templateUrl: template_dir+'line_overview.html',
             controller: 'LineOverviewCtrl'
+        })
+        .when('/calendar', {
+            templateUrl: template_dir+'calendars_overview.html',
+            controller: 'CalendarOverviewCtrl'
         });
 }]);
