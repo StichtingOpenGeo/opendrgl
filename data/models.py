@@ -133,6 +133,7 @@ class TripPattern(models.Model):
             return tps
         return None
 
+
 class TripPatternStop(models.Model):
     pattern = models.ForeignKey(TripPattern, related_name='stops')
     order = models.PositiveSmallIntegerField()
@@ -146,8 +147,9 @@ class TripPatternStop(models.Model):
 
 class Calendar(models.Model):
     agency = models.ForeignKey(Agency)
+    label = models.CharField(max_length=25)
     from_date = models.DateField()
-    to_date = models.DateField()
+    till_date = models.DateField()
     on_monday = models.BooleanField(default=False)
     on_tuesday = models.BooleanField(default=False)
     on_wednesday = models.BooleanField(default=False)
@@ -157,8 +159,8 @@ class Calendar(models.Model):
     on_sunday = models.BooleanField(default=False)
 
 
-class CalenderExceptions(models.Model):
-    calender = models.ForeignKey(Calendar)
+class CalendarException(models.Model):
+    calender = models.ForeignKey(Calendar, related_name="exceptions")
     is_cancel = models.BooleanField(default=False)  # Otherwise it's an addition
     date = models.DateField()
 

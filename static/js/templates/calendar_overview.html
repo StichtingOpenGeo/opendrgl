@@ -1,16 +1,21 @@
 <h2>Kalenders</h2>
 <table class="table table-bordered table-striped">
     <tr>
-        <th class="col-lg-8 col-md-8">Naam</th>
-        <th>Geldigheid</th>
+        <th class="col-lg-6 col-md-6">Naam</th>
+        <th class="col-lg-4 col-md-4">Geldigheid</th>
         <th>&nbsp;</th>
     </tr>
     <tr ng-repeat="calendar in calendars">
         <td>{{ calendar.label }}</td>
+        <td>{{ calendar.from_date|date:"dd-MM-yyyy" }} tot {{ calendar.till_date|date:"dd-MM-yyyy" }}</td>
         <td><a href="#calendar/{{ calendar.pk }}" class="btn btn-primary btn-xs">Bewerk</a></td>
     </tr>
     <tr>
         <td><input ng-model="newCalendar.label"></td>
+        <td><input type="text" ng-model="newCalendar.from_date" data-max-date="{{newCalendar.till_date}}" data-date-format="dd-MM-yyyy" placeholder="Van" bs-datepicker>
+            tot
+            <input type="text" ng-model="newCalendar.till_date" data-min-date="{{newCalendar.from_date}}" data-date-format="dd-MM-yyyy" placeholder="Tot" bs-datepicker>
+        </td>
         <td><a href="" ng-click="addCalendar()" class="btn btn-success btn-xs">Toevoegen</a></td>
     </tr>
 </table>

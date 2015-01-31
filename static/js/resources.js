@@ -33,3 +33,7 @@ openDrglResources.factory('TripPatternStopResource', ['$resource', function($res
 openDrglResources.factory('TripResource', ['$resource', function($resource) {
     return $resource('/data/trip/', {'pk': '@pk'}, {});
 }]);
+
+openDrglResources.factory('CalendarResource', ['$resource', function($resource) {
+    return $resource('/data/calendars/', {'pk': '@pk'}, {});
+}]);

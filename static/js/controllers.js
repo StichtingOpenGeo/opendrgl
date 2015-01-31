@@ -2,7 +2,7 @@
  * Created by Joel Haasnoot on 23/08/14.
  */
 var template_dir = '/static/js/templates/'
-var openDrglApp = angular.module('openDrglApp', ['ngCookies', 'ngRoute', 'openDrglUtils', 'openDrglServices', 'ui.bootstrap', 'openlayers-directive']);
+var openDrglApp = angular.module('openDrglApp', ['ngCookies', 'ngRoute', 'openDrglUtils', 'openDrglServices', 'mgcrea.ngStrap', 'openlayers-directive']);
 
 openDrglApp.run(function($http, $cookies) {
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
@@ -407,8 +407,24 @@ openDrglApp.controller('MapController', ['$scope', function($scope) {
     $scope.$watch('$parent.current_stops', $scope.getMarkerStops);
 }]);
 
-openDrglApp.controller('MapController', ['$scope', function($scope) {
+openDrglApp.controller('CalendarOverviewCtrl', ['$scope', '$filter', 'CalendarService', function($scope, $filter, CalendarService) {
     $scope.calendars = [];
+    $scope.newCalendar = {};
+    $scope.loadCalendars = function() {
+        CalendarService.getCalendars().then(function(calendars) {
+            $scope.calendars = calendars;
+        });
+    };
+    $scope.addCalendar = function() {
+        var cal = CalendarService.newCalendar({ label: $scope.newCalendar.label,
+                                                from_date: $filter('date')($scope.newCalendar.from_date, 'yyyy-MM-dd'),
+                                                till_date: $filter('date')($scope.newCalendar.till_date, 'yyyy-MM-dd') });
+        CalendarService.saveCalendar(cal).then(function(newCal) {
+            $scope.newCalendar = {};
+            $scope.calendars.push(newCal);
+        })
+    }
+    $scope.loadCalendars();
 }]);
 
 openDrglApp.config(['$routeProvider', '$resourceProvider', function($routeProvider, $resourceProvider) {
@@ -425,7 +441,7 @@ openDrglApp.config(['$routeProvider', '$resourceProvider', function($routeProvid
             controller: 'LineOverviewCtrl'
         })
         .when('/calendar', {
-            templateUrl: template_dir+'calendars_overview.html',
+            templateUrl: template_dir+'calendar_overview.html',
             controller: 'CalendarOverviewCtrl'
         });
 }]);

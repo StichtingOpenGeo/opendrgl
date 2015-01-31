@@ -121,3 +121,29 @@ openDrglServices.service('TripPatternStopService', ['TripPatternStopResource', f
     }
 
 }]);
+
+
+openDrglServices.service('CalendarService', ['CalendarResource', function(CalendarResource) {
+
+
+    this.newCalendar = function(args) {
+        return new CalendarResource(args);
+    }
+
+    this.saveCalendar = function(cal) {
+        return cal.$save();
+    }
+
+    this.deleteCalendar = function(id) {
+        return CalendarResource.delete({pk: id}).$promise;
+    }
+
+    this.getCalendar = function(id) {
+        return CalendarResource.get({pk: id}).$promise;
+    }
+
+    this.getCalendars = function(id) {
+        return CalendarResource.query().$promise;
+    }
+
+}]);
