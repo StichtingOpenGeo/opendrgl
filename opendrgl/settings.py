@@ -67,11 +67,12 @@ WSGI_APPLICATION = 'opendrgl.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE' : 'django.db.backends.postgresql_psycopg2',
-        'NAME' : 'opendrgl',
-        'USERNAME' : 'opendrgl',
-        'PASSWORD' : 'opendrgl',
-        'HOST' : '127.0.0.1'
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'opendrgl',
+        'USER': 'opendrgl',
+        'PASSWORD': 'opendrgl',
+        'HOST': '127.0.0.1',
+        'PORT': '5432'
     }
 }
 
