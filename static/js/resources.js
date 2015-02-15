@@ -35,5 +35,5 @@ openDrglResources.factory('TripResource', ['$resource', function($resource) {
 }]);
 
 openDrglResources.factory('CalendarResource', ['$resource', function($resource) {
-    return $resource('/data/calendars/', {'pk': '@pk'}, {});
+    return $resource('/data/calendars/:id', {'id': '@pk'}, {});
 }]);

@@ -55,5 +55,6 @@ class CalendarSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Calendar
-        fields = ('id', 'label', 'agency', 'from_date', 'till_date', 'exceptions')
-        depth = 2
+        fields = ('id', 'label', 'agency', 'from_date', 'till_date', 'on_monday', 'on_tuesday', 'on_wednesday',
+                  'on_thursday', 'on_friday', 'on_saturday', 'on_sunday', 'exceptions')
+        depth = 1

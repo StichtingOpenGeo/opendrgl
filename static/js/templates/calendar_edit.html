@@ -1,0 +1,99 @@
+
+    <h2>
+        <span style="float: left;"></span><input name="linenumber" ng-model="calendar.label" class="form-control col-sm-4">
+    </h2>
+    <div class="clearfix"><br /></div>
+    <form class="calendar form-horizontal">
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Van</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" ng-model="calendar.from_date" data-max-date="{{calendar.till_date}}" data-date-format="dd-MM-yyyy" data-container="body" placeholder="Van" bs-datepicker>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">Tot</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" ng-model="calendar.till_date" data-min-date="{{calendar.from_date}}" data-date-format="dd-MM-yyyy" data-container="body" placeholder="Tot" bs-datepicker>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="form-group col-md-6" style="vertical-align: top;">
+            <h3>Dagen</h3>
+                <div class="col-sm-offset-2 col-sm-10">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="calendar.on_monday"> maandag
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="calendar.on_tuesday"> dinsdag
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="calendar.on_wednesday"> woensdag
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="calendar.on_thursday"> donderdag
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="calendar.on_friday"> vrijdag
+                        </label>
+                    </div>
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="calendar.on_saturday"> zaterday
+                        </label>
+                    </div>
+
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="calendar.on_sunday"> zondag
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6" style="vertical-align: top;">
+                <h3>Uitzonderingen</h3>
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Datum</th>
+                        <th>Acties</th>
+                    </tr>
+                    <tr ng-repeat="exception in calendar.exceptions">
+                        <td><i class="glyphicon glyphicon-ok success" ng-show="exception.is_cancel"></i>
+                            <i class="glyphicon glyphicon-remove warning" ng-show="!exception.is_cancel"></i>
+                            {{ exception.date|date:"dd-MM-yyyy" }}
+                        </td>
+                        <td><input type="button" class="btn btn-danger btn-sm" value="Verwijder" /></td>
+                    </tr>
+                    <tr>
+                        <td class="form-inline">
+                            <select class="form-control" ng-model="newException.is_cancel" ng-required="true">
+                                <option value="true">Niet op</option>
+                                <option value="false">Ook op</option>
+                            </select>
+                            <input type="text" class="form-control" ng-model="newException.date" data-min-date="{{calendar.from_date}}" data-max-date="{{calendar.till_date}}" data-date-format="dd-MM-yyyy" data-container="body" placeholder="Datum" bs-datepicker>
+                        </td>
+                        <td><input type="button" class="btn btn-success btn-sm" value="Toevoegen" /></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <input type="button" class="btn btn-primary" ng-click="saveCalendar()" value="Opslaan" />
+        </div>
+
+    </form>

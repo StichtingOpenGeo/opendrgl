@@ -427,6 +427,17 @@ openDrglApp.controller('CalendarOverviewCtrl', ['$scope', '$filter', 'CalendarSe
     $scope.loadCalendars();
 }]);
 
+openDrglApp.controller('CalendarEditCtrl', ['$scope', '$routeParams', 'CalendarService', function($scope, $routeParams, CalendarService) {
+    $scope.calendar = {};
+    $scope.newException = {isCancel: "true"}
+    $scope.loadCalendar = function() {
+        CalendarService.getCalendar($routeParams['calendar']).then(function(calendar) {
+            $scope.calendar = calendar;
+        });
+    };
+    $scope.loadCalendar();
+}]);
+
 openDrglApp.config(['$routeProvider', '$resourceProvider', function($routeProvider, $resourceProvider) {
 
     $resourceProvider.defaults.stripTrailingSlashes = false;
@@ -439,6 +450,10 @@ openDrglApp.config(['$routeProvider', '$resourceProvider', function($routeProvid
         .when('/line', {
             templateUrl: template_dir+'line_overview.html',
             controller: 'LineOverviewCtrl'
+        })
+        .when('/calendar/:calendar', {
+            templateUrl: template_dir+'calendar_edit.html',
+            controller: 'CalendarEditCtrl'
         })
         .when('/calendar', {
             templateUrl: template_dir+'calendar_overview.html',

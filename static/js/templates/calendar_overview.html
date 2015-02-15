@@ -8,7 +8,7 @@
     <tr ng-repeat="calendar in calendars">
         <td>{{ calendar.label }}</td>
         <td>{{ calendar.from_date|date:"dd-MM-yyyy" }} tot {{ calendar.till_date|date:"dd-MM-yyyy" }}</td>
-        <td><a href="#calendar/{{ calendar.pk }}" class="btn btn-primary btn-xs">Bewerk</a></td>
+        <td><a href="#calendar/{{ calendar.id }}" class="btn btn-primary btn-xs">Bewerk</a></td>
     </tr>
     <tr>
         <td><input ng-model="newCalendar.label"></td>

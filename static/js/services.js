@@ -135,11 +135,11 @@ openDrglServices.service('CalendarService', ['CalendarResource', function(Calend
     }
 
     this.deleteCalendar = function(id) {
-        return CalendarResource.delete({pk: id}).$promise;
+        return CalendarResource.delete({id: id}).$promise;
     }
 
     this.getCalendar = function(id) {
-        return CalendarResource.get({pk: id}).$promise;
+        return CalendarResource.get({id: id}).$promise;
     }
 
     this.getCalendars = function(id) {

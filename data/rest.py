@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from data.models import Line, TripPattern, Calendar
 from data.serializers import TripPatternStopSerializer, LineSerializer, TripPatternSerializer, CalendarSerializer
 
-
 __author__ = 'Joel Haasnoot'
 
 # TODO: Figure out DetailSerializerMixin
