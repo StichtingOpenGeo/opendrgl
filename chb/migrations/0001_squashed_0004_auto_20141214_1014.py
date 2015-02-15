@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='ChbQuay',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('public_number', models.CharField(unique=True, max_length=10)),
+                ('public_code', models.CharField(unique=True, max_length=10)),
                 ('name', models.CharField(max_length=100)),
                 ('city', models.CharField(max_length=25, null=True, blank=True)),
                 ('lat', models.DecimalField(null=True, max_digits=10, decimal_places=8, blank=True)),
@@ -44,10 +44,5 @@ class Migration(migrations.Migration):
             name='stop',
             field=models.ForeignKey(to='chb.ChbStop'),
             preserve_default=True,
-        ),
-        migrations.RenameField(
-            model_name='chbquay',
-            old_name='public_number',
-            new_name='public_code',
-        ),
+        )
     ]
