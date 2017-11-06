@@ -1,7 +1,7 @@
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.http import Http404
 from django.views.generic import DetailView
-from djangular.views.crud import NgCRUDView
+from djng.views.crud import NgCRUDView
 from preserialize.serialize import serialize
 
 __author__ = 'Joel Haasnoot'

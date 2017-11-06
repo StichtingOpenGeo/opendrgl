@@ -1,7 +1,7 @@
 from braces.views import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
-from djangular.views.crud import NgCRUDView
+from djng.views.crud import NgCRUDView
 
 from data.models import TripPattern, Stop, TripPatternStop, Trip, Line
 
@@ -28,7 +28,7 @@ class StopView(DefaultCRUDView):
     fields = ['agency', 'name', 'lat', 'lon']
 
     def get_form_kwargs(self):
-        kwargs = super(StopView, self).get_form_kwargs();
+        kwargs = super(StopView, self).get_form_kwargs()
         kwargs['data']['agency'] = self.get_user_agency()
         return kwargs
 
@@ -40,7 +40,7 @@ class LineView(DefaultCRUDView):
     model = Line
 
     def get_form_kwargs(self):
-        kwargs = super(LineView, self).get_form_kwargs();
+        kwargs = super(LineView, self).get_form_kwargs()
         kwargs['data']['agency'] = self.get_user_agency()
         return kwargs
 

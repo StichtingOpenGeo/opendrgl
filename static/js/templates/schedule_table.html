@@ -36,7 +36,7 @@
                 <td>
                     <input ng-model="newStop.name" typeahead="stop as stop.name for stop in getStopSearch($viewValue)"
                            typeahead-loading="loadingLocations" typeahead-template-url="/static/js/templates/autocomplete.html"
-                           typeahead-on-select="selectNewStop($item, $model, $label)" typeahead-append-to-body="true"
+                           typeahead-on-select="selectNewStop($item, $model, $label)" typeahead-append-to-body="true" typeahead-min-length="2"
                            placeholder="Nieuwe halte" />
                     <a ng-click="addStop()" class="btn btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i>&nbsp;Nieuwe halte</a>
                 </td>

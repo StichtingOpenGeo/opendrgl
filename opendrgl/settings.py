@@ -43,7 +43,7 @@ INSTALLED_APPS = (
     'chb',
 
     # Third-party libs
-    'djangular',
+    'djng',
     'rest_framework',
     'floppyforms'
 )
@@ -143,3 +143,5 @@ REST_FRAMEWORK = {
 #         },
 #         },
 #     }
+
+GEOS_LIBRARY_PATH = '/usr/local/Cellar/geos/3.4.2/lib/libgeos_c.1.dylib'

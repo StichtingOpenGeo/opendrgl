@@ -18,3 +18,5 @@
 }
 .map {
 }
+
+body > .typeahead.ng-hide { display: block !important; visibility: hidden !important; overflow: hidden; }
